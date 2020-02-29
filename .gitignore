@@ -355,6 +355,7 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/visualstudio
 
 #Ignore assemblies, except ours
-**/Assemblies
+**/Assemblies/*
 !**/Assemblies/ProgressRenderer.dll
+!**/Assemblies/Progress-Renderer.dll
 !**/Assemblies/FJ.CoreWin.dll

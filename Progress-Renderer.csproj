@@ -277,7 +277,6 @@
     <Compile Include="Source\UI\SmallMessageBox.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="3rd party content.txt" />
     <Content Include="About\About.xml" />
     <Content Include="About\Manifest.xml" />
     <Content Include="About\Preview.png" />
@@ -289,6 +288,7 @@
     <Content Include="Common\Defs\Misc\KeyBindings\KeyBindings.xml" />
     <Content Include="Common\Languages\English\Keyed\All.xml" />
     <Content Include="Common\Patches\Misc_Designations_DesignationCategories.xml" />
+    <Content Include="LoadFolders.xml" />
     <Content Include="steam_desc.txt" />
     <Content Include="Common\Textures\Designations\CornerMarker.png" />
     <Content Include="Common\Textures\UI\Designators\CornerMarkerOff.png" />
@@ -303,7 +303,7 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="1.1\Assemblies\" />
+    <Folder Include="v1.1\Assemblies\" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.8\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
@@ -318,7 +318,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call $(ProjectDir)Install.bat $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Assemblies Common 1.1" ""</PostBuildEvent>
+    <PostBuildEvent>call $(ProjectDir)Install.bat $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Assemblies Common v1.1" ""</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
