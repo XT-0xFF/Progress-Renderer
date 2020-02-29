@@ -24,7 +24,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>1.1\Assemblies\</OutputPath>
+    <OutputPath>v1.1\Assemblies\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -318,7 +318,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call $(ProjectDir)Install.bat $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Assemblies Common v1.1" ""</PostBuildEvent>
+    <PostBuildEvent>call $(ProjectDir)Install.bat $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Assemblies Common v1.1" "LoadFolders.xml"</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
