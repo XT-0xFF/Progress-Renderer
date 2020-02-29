@@ -146,7 +146,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call $(ProjectDir)Install.bat $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Assemblies Common v1.1" "LoadFolders.xml"</PostBuildEvent>
+    <PostBuildEvent>call $(ProjectDir)Install.bat $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Common v1.1" "LoadFolders.xml"</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
