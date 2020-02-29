@@ -73,7 +73,7 @@ namespace ProgressRenderer
             List<Designation> cornerMarkers = Map.designationManager.allDesignations.FindAll(des => des.def == DesignationDefOf.CornerMarker);
             // Message for the amount of markers on the map
             int markerCount = cornerMarkers.Count;
-            string message = "LPR_MessageCornerMarkerAmount".Translate(new object[] { markerCount }) + " ";
+            string message = TranslatorFormattedStringExtensions.Translate("LPR_MessageCornerMarkerAmount", markerCount) + " ";
             if (markerCount < 2)
             {
                 message += "LPR_MessageCornerMarkerTooLess".Translate();
@@ -107,26 +107,26 @@ namespace ProgressRenderer
                 int distX = endX - startX;
                 int distZ = endZ - startZ;
                 string ratio = ((float)distX / distZ).ToString("0.###");
-                string messageRect = "LPR_MessageCornerMarkersRect".Translate(new object[] { distX, distZ });
+                string messageRect = TranslatorFormattedStringExtensions.Translate("LPR_MessageCornerMarkersRect", distX, distZ);
                 if (distX * 3 == distZ * 4)
                 {
-                    messageRect += " " + "LPR_MessageCornerMarkersRectRatioDefined".Translate(new object[] { ratio, "4:3" });
+                    messageRect += " " + TranslatorFormattedStringExtensions.Translate("LPR_MessageCornerMarkersRectRatioDefined", ratio, "4:3");
                 }
                 else if (distX * 2 == distZ * 3)
                 {
-                    messageRect += " " + "LPR_MessageCornerMarkersRectRatioDefined".Translate(new object[] { ratio, "3:2" });
+                    messageRect += " " + TranslatorFormattedStringExtensions.Translate("LPR_MessageCornerMarkersRectRatioDefined", ratio, "3:2");
                 }
                 else if (distX * 10 == distZ * 16)
                 {
-                    messageRect += " " + "LPR_MessageCornerMarkersRectRatioDefined".Translate(new object[] { ratio, "16:10" });
+                    messageRect += " " + TranslatorFormattedStringExtensions.Translate("LPR_MessageCornerMarkersRectRatioDefined", ratio, "16:10" );
                 }
                 else if (distX * 9 == distZ * 16)
                 {
-                    messageRect += " " + "LPR_MessageCornerMarkersRectRatioDefined".Translate(new object[] { ratio, "16:9" });
+                    messageRect += " " + TranslatorFormattedStringExtensions.Translate("LPR_MessageCornerMarkersRectRatioDefined", ratio, "16:9" );
                 }
                 else
                 {
-                    messageRect += " " + "LPR_MessageCornerMarkersRectRatio".Translate(new object[] { ratio });
+                    messageRect += " " + TranslatorFormattedStringExtensions.Translate("LPR_MessageCornerMarkersRectRatio", ratio);
                 }
                 if (distZ <= 20)
                 {

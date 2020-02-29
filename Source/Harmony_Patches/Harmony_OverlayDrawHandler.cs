@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Verse;
 using RimWorld;
 
@@ -6,7 +6,7 @@ namespace ProgressRenderer
 {
 
     [HarmonyPatch(typeof(OverlayDrawHandler))]
-    [HarmonyPatch("ShouldDrawPowerGrid", PropertyMethod.Getter)]
+    [HarmonyPatch("ShouldDrawPowerGrid", MethodType.Getter)]
     public class Harmony_OverlayDrawHandler_ShouldDrawPowerGrid
     {
 

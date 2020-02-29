@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Patch>
-
 	<Operation Class="PatchOperationAdd">
 		<xpath>/Defs/DesignationCategoryDef[defName="Orders"]/specialDesignatorClasses</xpath>
 		<value>
@@ -8,5 +7,4 @@
 			<li>ProgressRenderer.Designator_CornerMarkerRemove</li> 
 		</value>
 	</Operation>
-
 </Patch>

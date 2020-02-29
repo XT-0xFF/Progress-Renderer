@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
-using FluxJpeg.Core;
-using FluxJpeg.Core.Encoder;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -151,7 +151,7 @@ namespace ProgressRenderer
 
         private void ShowCurrentRenderMessage()
         {
-            if (PRModSettings.renderFeedback == RenderFeedback.Window && PRModSettings.encoding != "jpg_fluxthreaded")
+            if (PRModSettings.renderFeedback == RenderFeedback.Window)
             {
                 messageBox = new SmallMessageBox("LPR_Rendering".Translate());
                 Find.WindowStack.Add(messageBox);
@@ -376,16 +376,6 @@ namespace ProgressRenderer
             {
                 EncodeUnityJpg();
             }
-            else if (PRModSettings.encoding == "jpg_fluxthreaded")
-            {
-                // Prepare data
-                imageTextureRawData = imageTexture.GetRawTextureData();
-                imageTextureWidth = imageTexture.width;
-                imageTextureHeight = imageTexture.height;
-                // Start thread
-                encodeThread = new Thread(EncodeFluxJpeg);
-                encodeThread.Start();
-            }
             else
             {
                 Log.Error("Progress Renderer encoding setting is wrong or missing. Using default for now. Go to the settings and set a new value.");
@@ -436,55 +426,6 @@ namespace ProgressRenderer
                 File.Copy(filePath, CreateFilePath(FileNamePattern.Numbered, true));
             }
             DoEncodingPost();
-        }
-
-        private void EncodeFluxJpeg()
-        {
-            Log.Message("0 - start");
-            // Get all needed data which could collide as fast as possible
-            bool localManuallyTriggered = manuallyTriggered;
-            string filePath = CreateCurrentFilePath();
-            // Convert temp data to local raw data
-            byte[][,] rawImage = new byte[3][,];
-            Log.Message("1");
-            rawImage[0] = new byte[imageTextureWidth, imageTextureHeight];
-            rawImage[1] = new byte[imageTextureWidth, imageTextureHeight];
-            rawImage[2] = new byte[imageTextureWidth, imageTextureHeight];
-            Log.Message("1");
-            for (int row = 0; row < imageTextureHeight; row++)
-            {
-                for (int col = 0; col < imageTextureWidth; col++)
-                {
-                    int index = ((imageTextureHeight - 1 - row) * imageTextureWidth + col) * 3;
-                    rawImage[0][col, row] = imageTextureRawData[index];
-                    rawImage[1][col, row] = imageTextureRawData[index + 1];
-                    rawImage[2][col, row] = imageTextureRawData[index + 2];
-                }
-            }
-            Log.Message("3 - post raw");
-            // Tmp cleanup
-            ctrlEncodingPost = true;
-            // Encode raw data and save the final image
-            ColorModel model = new ColorModel { colorspace = FluxJpeg.Core.ColorSpace.RGB };
-            Log.Message("4");
-            FluxJpeg.Core.Image image = new FluxJpeg.Core.Image(model, rawImage);
-            Log.Message("5 - post image");
-            FileStream fileStream = new FileStream(filePath, FileMode.Create);
-            Log.Message("6 . post fs");
-            JpegEncoder encoder = new JpegEncoder(image, 75, fileStream);
-            Log.Message("7 - post encode");
-            encoder.Encode();
-            Log.Message("8 - post save");
-            // Local cleanup
-            fileStream.Dispose();
-            image = null;
-            rawImage = null;
-            Log.Message("end - 9");
-            // Create tmp copy to file if needed
-            if (!localManuallyTriggered && PRModSettings.fileNamePattern == FileNamePattern.BothTmpCopy)
-            {
-                File.Copy(filePath, CreateFilePath(FileNamePattern.Numbered, true));
-            }
         }
 
         private string CreateCurrentFilePath()

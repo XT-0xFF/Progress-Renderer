@@ -10,7 +10,7 @@ namespace ProgressRenderer
     {
 
         public const float GapHeight = 10f;
-        public static string[] SupportedEncodings = { "png_unity", "jpg_unity", "jpg_fluxthreaded" };
+        public static string[] SupportedEncodings = { "png_unity", "jpg_unity" };
         
         private static bool DefaultEnabled = true;
         private static RenderFeedback DefaultRenderFeedback = RenderFeedback.Window;
@@ -111,10 +111,6 @@ namespace ProgressRenderer
                 menuEntries.Add(new FloatMenuOption(("LPR_ImgEncoding_" + SupportedEncodings[1]).Translate(), delegate
                 {
                     encoding = SupportedEncodings[1];
-                }));
-                menuEntries.Add(new FloatMenuOption(("LPR_ImgEncoding_" + SupportedEncodings[2]).Translate(), delegate
-                {
-                    encoding = SupportedEncodings[2];
                 }));
                 Find.WindowStack.Add(new FloatMenu(menuEntries));
             }
