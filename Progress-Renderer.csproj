@@ -124,7 +124,6 @@
     <Content Include="Common\Languages\English\Keyed\All.xml" />
     <Content Include="Common\Patches\Misc_Designations_DesignationCategories.xml" />
     <Content Include="LoadFolders.xml" />
-    <Content Include="steam_desc.txt" />
     <Content Include="Common\Textures\Designations\CornerMarker.png" />
     <Content Include="Common\Textures\UI\Designators\CornerMarkerOff.png" />
     <Content Include="Common\Textures\UI\Designators\CornerMarkerOn.png" />
