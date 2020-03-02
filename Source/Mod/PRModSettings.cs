@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProgressRenderer.Source.Enum;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
@@ -9,9 +10,7 @@ namespace ProgressRenderer
     public class PRModSettings : ModSettings
     {
 
-        public const float GapHeight = 10f;
-        public static string[] SupportedEncodings = { "png_unity", "jpg_unity" };
-        
+        public const float GapHeight = 10f;        
         private static bool DefaultEnabled = true;
         private static RenderFeedback DefaultRenderFeedback = RenderFeedback.Window;
         private static bool DefaultRenderDesignations = false;
@@ -21,7 +20,7 @@ namespace ProgressRenderer
         private static int DefaultSmoothRenderAreaSteps = 0;
         private static int DefaultInterval = 24;
         private static int DefaultTimeOfDay = 8;
-        private static string DefaultEncoding = SupportedEncodings[1];
+        private static EncodingType DefaultEncoding = EncodingType.UnityJPG;
         private static int DefaultPixelPerCell = 32;
         private static int DefaultOutputImageFixedHeight = 0;
         private static bool DefaultCreateSubdirs = false;
@@ -36,7 +35,7 @@ namespace ProgressRenderer
         public static int smoothRenderAreaSteps = DefaultSmoothRenderAreaSteps;
         public static int interval = DefaultInterval;
         public static int timeOfDay = DefaultTimeOfDay;
-        public static string encoding = DefaultEncoding;
+        public static EncodingType encoding = DefaultEncoding;
         public static int pixelPerCell = DefaultPixelPerCell;
         public static int outputImageFixedHeight = DefaultOutputImageFixedHeight;
         public static string exportPath;
@@ -68,18 +67,14 @@ namespace ProgressRenderer
             if (ls.ButtonTextLabeled("LPR_SettingsRenderFeedbackLabel".Translate(), ("LPR_RenderFeedback_" + renderFeedback).Translate()))
             {
                 List<FloatMenuOption> menuEntries = new List<FloatMenuOption>();
-                menuEntries.Add(new FloatMenuOption(("LPR_RenderFeedback_" + RenderFeedback.None).Translate(), delegate
+                var feedbackTypes = (RenderFeedback[])Enum.GetValues(typeof(RenderFeedback));
+                foreach (var type in feedbackTypes)
                 {
-                    renderFeedback = RenderFeedback.None;
-                }));
-                menuEntries.Add(new FloatMenuOption(("LPR_RenderFeedback_" + RenderFeedback.Message).Translate(), delegate
-                {
-                    renderFeedback = RenderFeedback.Message;
-                }));
-                menuEntries.Add(new FloatMenuOption(("LPR_RenderFeedback_" + RenderFeedback.Window).Translate(), delegate
-                {
-                    renderFeedback = RenderFeedback.Window;
-                }));
+                    menuEntries.Add(new FloatMenuOption(("LPR_RenderFeedback_" + EnumUtils.ToFriendlyString(type)).Translate(), delegate
+                    {
+                        renderFeedback = type;
+                    }));
+                }
                 Find.WindowStack.Add(new FloatMenu(menuEntries));
             }
             // Restore original values
@@ -104,14 +99,14 @@ namespace ProgressRenderer
             if (ls.ButtonTextLabeled("LPR_SettingsEncodingLabel".Translate(), ("LPR_ImgEncoding_" + encoding).Translate()))
             {
                 List<FloatMenuOption> menuEntries = new List<FloatMenuOption>();
-                menuEntries.Add(new FloatMenuOption(("LPR_ImgEncoding_" + SupportedEncodings[0]).Translate(), delegate
+                var encodingTypes = (EncodingType[])Enum.GetValues(typeof(EncodingType));
+                foreach(var encodingType in encodingTypes)
                 {
-                    encoding = SupportedEncodings[0];
-                }));
-                menuEntries.Add(new FloatMenuOption(("LPR_ImgEncoding_" + SupportedEncodings[1]).Translate(), delegate
-                {
-                    encoding = SupportedEncodings[1];
-                }));
+                    menuEntries.Add(new FloatMenuOption(("LPR_ImgEncoding_" + EnumUtils.ToFriendlyString(encodingType)).Translate(), delegate
+                    {
+                        encoding = encodingType;
+                    }));
+                }
                 Find.WindowStack.Add(new FloatMenu(menuEntries));
             }
             // Restore original values
@@ -133,18 +128,15 @@ namespace ProgressRenderer
             if (ls.ButtonTextLabeled("LPR_SettingsFileNamePatternLabel".Translate(), ("LPR_FileNamePattern_" + fileNamePattern).Translate()))
             {
                 List<FloatMenuOption> menuEntries = new List<FloatMenuOption>();
-                menuEntries.Add(new FloatMenuOption(("LPR_FileNamePattern_" + FileNamePattern.DateTime).Translate(), delegate
+                var patterns = (FileNamePattern[])Enum.GetValues(typeof(FileNamePattern));
+                foreach(var pattern in patterns)
                 {
-                    fileNamePattern = FileNamePattern.DateTime;
-                }));
-                menuEntries.Add(new FloatMenuOption(("LPR_FileNamePattern_" + FileNamePattern.Numbered).Translate(), delegate
-                {
-                    fileNamePattern = FileNamePattern.Numbered;
-                }));
-                menuEntries.Add(new FloatMenuOption(("LPR_FileNamePattern_" + FileNamePattern.BothTmpCopy).Translate(), delegate
-                {
-                    fileNamePattern = FileNamePattern.BothTmpCopy;
-                }));
+                    //TODO: friendly string here as well
+                    menuEntries.Add(new FloatMenuOption(("LPR_FileNamePattern_" + EnumUtils.ToFriendlyString(pattern)).Translate(), delegate
+                    {
+                        fileNamePattern = pattern;
+                    }));
+                }
                 Find.WindowStack.Add(new FloatMenu(menuEntries));
             }
             // Restore original values

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProgressRenderer
+﻿namespace ProgressRenderer
 {
 
     public enum RenderFeedback

@@ -90,6 +90,7 @@
     <Compile Include="Source\Designator\Designator_CornerMarker.cs" />
     <Compile Include="Source\Designator\Designator_CornerMarkerAdd.cs" />
     <Compile Include="Source\Designator\Designator_CornerMarkerRemove.cs" />
+    <Compile Include="Source\Enum\EnumUtils.cs" />
     <Compile Include="Source\Enum\FileNamePattern.cs" />
     <Compile Include="Source\Enum\RenderFeedback.cs" />
     <Compile Include="Source\Extension\Listing_StandardExtension.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Source\Harmony_Patches\Harmony_SelectionDrawer.cs" />
     <Compile Include="Source\Harmony_Patches\Harmony_Targeter.cs" />
     <Compile Include="Source\MapComponents\MapComponent_RenderManager.cs" />
+    <Compile Include="Source\Enum\EncodingType.cs" />
     <Compile Include="Source\Mod\PRMod.cs" />
     <Compile Include="Source\Mod\PRModSettings.cs" />
     <Compile Include="Source\UI\MoreWidgets.cs" />

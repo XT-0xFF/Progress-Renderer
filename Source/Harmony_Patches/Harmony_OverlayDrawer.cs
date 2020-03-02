@@ -1,11 +1,10 @@
 ﻿using HarmonyLib;
 using RimWorld;
-using RimWorld.Planet;
 using Verse;
 
 namespace ProgressRenderer
 {
-    
+
     [HarmonyPatch(typeof(OverlayDrawer))]
     [HarmonyPatch("DrawAllOverlays")]
     public class Harmony_OverlayDrawer_DrawAllOverlays

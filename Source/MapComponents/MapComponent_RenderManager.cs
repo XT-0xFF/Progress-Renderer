@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using HarmonyLib;
+using ProgressRenderer.Source.Enum;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -20,6 +19,7 @@ namespace ProgressRenderer
         private const int RenderTextureSize = 4096;
 
         public static int nextGlobalRenderManagerTickOffset = 0;
+        public bool Rendering { get; private set; }
 
         private int tickOffset = -1;
         private int lastRenderedHour = -999;
@@ -40,7 +40,6 @@ namespace ProgressRenderer
         private int imageTextureHeight;
 
         private bool manuallyTriggered = false;
-        private bool renderingInt = false;
         private bool encodingInt = false;
         Thread encodeThread;
         private bool ctrlEncodingPost = false;
@@ -48,14 +47,6 @@ namespace ProgressRenderer
 
         public MapComponent_RenderManager(Map map) : base(map)
         {
-        }
-
-        public bool Rendering
-        {
-            get
-            {
-                return renderingInt;
-            }
         }
 
         public override void FinalizeInit() // New map and after loading
@@ -66,12 +57,6 @@ namespace ProgressRenderer
                 nextGlobalRenderManagerTickOffset = (nextGlobalRenderManagerTickOffset + 5) % GenTicks.TickRareInterval;
             }
         }
-
-        /*
-        public override void MapGenerated() // Only new map
-        {
-        }
-        */
 
         public override void MapComponentUpdate()
         {
@@ -165,11 +150,11 @@ namespace ProgressRenderer
         private IEnumerator DoRendering(bool forceRenderFullMap = false)
         {
             yield return new WaitForFixedUpdate();
-            if (renderingInt)
+            if (Rendering)
             {
                 Log.Error("Progress Renderer is still rendering an image while a new rendering was requested. This can lead to missing or wrong data. (This can also happen in rare situations when you trigger manual rendering the exact same time as an automatic rendering happens. If you did that, just check your export folder if both renderings were done corrently and ignore this error.)");
             }
-            renderingInt = true;
+            Rendering = true;
 
             // Temporary switch to this map for rendering
             bool switchedMap = false;
@@ -352,7 +337,7 @@ namespace ProgressRenderer
             }
 
             // Sinal finished rendering
-            renderingInt = false;
+            Rendering = false;
             yield return null;
 
             // Start encoding
@@ -367,19 +352,18 @@ namespace ProgressRenderer
             {
                 Log.Error("Progress Renderer is still encoding an image while the encoder was called again. This can lead to missing or wrong data.");
             }
-            encodingInt = true;
-            if (PRModSettings.encoding == "png_unity")
+            switch(PRModSettings.encoding)
             {
-                EncodeUnityPng();
-            }
-            else if (PRModSettings.encoding == "jpg_unity")
-            {
-                EncodeUnityJpg();
-            }
-            else
-            {
-                Log.Error("Progress Renderer encoding setting is wrong or missing. Using default for now. Go to the settings and set a new value.");
-                EncodeUnityJpg();
+                case EncodingType.UnityJPG:
+                    EncodeUnityJpg();
+                    break;
+                case EncodingType.UnityPNG:
+                    EncodeUnityPng();
+                    break;
+                default:
+                    Log.Error("Progress Renderer encoding setting is wrong or missing. Using default for now. Go to the settings and set a new value.");
+                    EncodeUnityJpg();
+                    break;
             }
         }
 
@@ -465,7 +449,7 @@ namespace ProgressRenderer
                 Directory.CreateDirectory(path);
             }
             // Get correct file and location
-            string fileExt = PRModSettings.encoding.Substring(0, 3);
+            string fileExt = EnumUtils.GetFileExtension(PRModSettings.encoding);
             string filePath = Path.Combine(path, imageName + "." + fileExt);
             if (!File.Exists(filePath))
             {

@@ -55,7 +55,6 @@
 	<!--<LPR_SettingsEncodingDescription>Choose the encoding method of the rendered image. This defines the resulting image format and affects rendering speed as well as image quality and filesize.</LPR_SettingsEncodingDescription>-->
 	<LPR_ImgEncoding_png_unity>PNG (Unity)</LPR_ImgEncoding_png_unity>
 	<LPR_ImgEncoding_jpg_unity>JPG (Unity)</LPR_ImgEncoding_jpg_unity>
-	<LPR_ImgEncoding_jpg_fluxthreaded>JPG (Flux Multithreaded) (EXPERIMENTAL)</LPR_ImgEncoding_jpg_fluxthreaded>
 	<LPR_SettingsPixelPerCellLabel>Pixel per cell (for image resolution)</LPR_SettingsPixelPerCellLabel>
 	<LPR_SettingsPixelPerCellDescription>Define with how many pixels each ingame map cell should be displayed on the rendered image.</LPR_SettingsPixelPerCellDescription>
 	<LPR_SettingsOutputImageFixedHeightLabel>Scale rendered image to fixed height (in px)</LPR_SettingsOutputImageFixedHeightLabel>
