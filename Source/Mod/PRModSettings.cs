@@ -21,6 +21,7 @@ namespace ProgressRenderer
         private static int DefaultInterval = 24;
         private static int DefaultTimeOfDay = 8;
         private static EncodingType DefaultEncoding = EncodingType.UnityJPG;
+        private static int DefaultJPGQuality = 80;
         private static int DefaultPixelPerCell = 32;
         private static int DefaultOutputImageFixedHeight = 0;
         private static bool DefaultCreateSubdirs = false;
@@ -36,6 +37,7 @@ namespace ProgressRenderer
         public static int interval = DefaultInterval;
         public static int timeOfDay = DefaultTimeOfDay;
         public static EncodingType encoding = DefaultEncoding;
+        public static int jpgQuality = DefaultJPGQuality;
         public static int pixelPerCell = DefaultPixelPerCell;
         public static int outputImageFixedHeight = DefaultOutputImageFixedHeight;
         public static string exportPath;
@@ -96,7 +98,7 @@ namespace ProgressRenderer
             // Backup original values
             backupAnchor = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleLeft;
-            if (ls.ButtonTextLabeled("LPR_SettingsEncodingLabel".Translate(), ("LPR_ImgEncoding_" + encoding).Translate()))
+            if (ls.ButtonTextLabeled("LPR_SettingsEncodingLabel".Translate(), ("LPR_ImgEncoding_" + EnumUtils.ToFriendlyString(encoding)).Translate()))
             {
                 List<FloatMenuOption> menuEntries = new List<FloatMenuOption>();
                 var encodingTypes = (EncodingType[])Enum.GetValues(typeof(EncodingType));
@@ -113,6 +115,11 @@ namespace ProgressRenderer
             Text.Anchor = backupAnchor;
 
             ls.Gap(GapHeight);
+            if (PRModSettings.encoding == EncodingType.UnityJPG)
+            {
+                ls.SliderLabeled("LPR_JPGQualityLabel".Translate(), ref jpgQuality, 1, 100, "###", "LPR_JPGQualityDescription".Translate());
+                ls.Gap(GapHeight);
+            }
             ls.SliderLabeled("LPR_SettingsPixelPerCellLabel".Translate(), ref pixelPerCell, 1, 64, "##0 ppc", "LPR_SettingsPixelPerCellDescription".Translate());
             ls.Gap(GapHeight);
             ls.IntegerFieldLabeled("LPR_SettingsOutputImageFixedHeightLabel".Translate(), ref outputImageFixedHeight, ref outputImageFixedHeightBuffer, "LPR_SettingsOutputImageFixedHeightAdditionalInfo".Translate(), "LPR_SettingsOutputImageFixedHeightDescription".Translate());
