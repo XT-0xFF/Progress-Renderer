@@ -54,12 +54,14 @@
 	<LPR_SettingsEncodingLabel>Exported image encoding</LPR_SettingsEncodingLabel>
 	<!--<LPR_SettingsEncodingDescription>Choose the encoding method of the rendered image. This defines the resulting image format and affects rendering speed as well as image quality and filesize.</LPR_SettingsEncodingDescription>-->
 	<LPR_ImgEncoding_png_unity>PNG (Unity)</LPR_ImgEncoding_png_unity>
-	<LPR_ImgEncoding_jpg_unity>JPG (Unity)</LPR_ImgEncoding_jpg_unity>
-	<LPR_SettingsPixelPerCellLabel>Pixel per cell (for image resolution)</LPR_SettingsPixelPerCellLabel>
+  <LPR_ImgEncoding_jpg_unity>JPG (Unity)</LPR_ImgEncoding_jpg_unity>
+	<LPR_JPGQualityLabel>JPG Quality</LPR_JPGQualityLabel>
+  <LPR_JPGQualityDescription>Higher values correspond to higher image quality, lower values correspond to smaller image size</LPR_JPGQualityDescription>
+  <LPR_SettingsPixelPerCellLabel>Pixel per cell (for image resolution)</LPR_SettingsPixelPerCellLabel>
 	<LPR_SettingsPixelPerCellDescription>Define with how many pixels each ingame map cell should be displayed on the rendered image.</LPR_SettingsPixelPerCellDescription>
 	<LPR_SettingsOutputImageFixedHeightLabel>Scale rendered image to fixed height (in px)</LPR_SettingsOutputImageFixedHeightLabel>
 	<LPR_SettingsOutputImageFixedHeightAdditionalInfo>(set to 0 to deactivate)</LPR_SettingsOutputImageFixedHeightAdditionalInfo>
-	<LPR_SettingsOutputImageFixedHeightDescription>Set this if you want the rendered output image to have a fixed height. The width will be calculated to prevent the aspect ratio. (Useful when you change the rendered area size mid-game and and plan to animate the image sequence later, so you can work with one fixed image size.)</LPR_SettingsOutputImageFixedHeightDescription>
+	<LPR_SettingsOutputImageFixedHeightDescription>Set this if you want the rendered output image to have a fixed height. The width will be calculated to preserve the aspect ratio. (Useful when you change the rendered area size mid-game and and plan to animate the image sequence later, so you can work with one fixed image size.)</LPR_SettingsOutputImageFixedHeightDescription>
 	<LPR_SettingsExportPathLabel>Export path</LPR_SettingsExportPathLabel>
 	<LPR_SettingsExportPathDescription>The path where rendered images will be saved. Note that this must be a valid path to an existing and accessible directory on your computer. You can copy+paste a directory from your file explorer here for simple editing.</LPR_SettingsExportPathDescription>
 	<LPR_SettingsFileNamePatternLabel>Exported image filename pattern</LPR_SettingsFileNamePatternLabel>
@@ -69,5 +71,6 @@
 	<LPR_FileNamePattern_BothTmpCopy>Both (numbered copy in tmp subdir)</LPR_FileNamePattern_BothTmpCopy>
 	<LPR_SettingsCreateSubdirsLabel>Create subdirectories for each world</LPR_SettingsCreateSubdirsLabel>
 	<LPR_SettingsCreateSubdirsDescription>Enable this if you want rendered images to be stored in subdirectories for each game/world by the world seed.</LPR_SettingsCreateSubdirsDescription>
+
 
 </LanguageData>

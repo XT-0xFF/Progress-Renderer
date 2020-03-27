@@ -401,7 +401,7 @@ namespace ProgressRenderer
 
         private void EncodeUnityJpg()
         {
-            byte[] encodedImage = imageTexture.EncodeToJPG();
+            byte[] encodedImage = imageTexture.EncodeToJPG(PRModSettings.jpgQuality);
             SaveUnityEncoding(encodedImage);
         }
 
