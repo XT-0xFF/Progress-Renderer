@@ -6,7 +6,7 @@ using System.Threading;
 using HarmonyLib;
 using ProgressRenderer.Source.Enum;
 using RimWorld;
-using RimWorld.Planet;
+using RimWorld.Planet; 
 using UnityEngine;
 using Verse;
 
@@ -300,18 +300,24 @@ namespace ProgressRenderer
             RenderTexture.active = renderTexture;
 
             // Render the image texture
-            if (PRModSettings.renderWeather)
+            try
             {
-                map.weatherManager.DrawAllWeather();
-            }
-            for (int i = 0; i < renderCountZ; i++)
-            {
-                for (int j = 0; j < renderCountX; j++)
+                if (PRModSettings.renderWeather)
                 {
-                    camera.transform.position = new Vector3(startX + cameraBasePos.x * (2 * j + 1), cameraBasePos.y, startZ + cameraBasePos.z * (2 * i + 1));
-                    camera.Render();
-                    imageTexture.ReadPixels(new Rect(0, 0, renderWidth, renderHeight), renderWidth * j, renderHeight * i, false);
+                    map.weatherManager.DrawAllWeather();
                 }
+                for (int i = 0; i < renderCountZ; i++)
+                {
+                    for (int j = 0; j < renderCountX; j++)
+                    {
+                        camera.transform.position = new Vector3(startX + cameraBasePos.x * (2 * j + 1), cameraBasePos.y, startZ + cameraBasePos.z * (2 * i + 1));
+                        camera.Render();
+                        imageTexture.ReadPixels(new Rect(0, 0, renderWidth, renderHeight), renderWidth * j, renderHeight * i, false);
+                    }
+                }
+            } catch(Exception e)
+            {
+                Log.Error(e.Message, true);
             }
 
             // Restore camera and viewport
