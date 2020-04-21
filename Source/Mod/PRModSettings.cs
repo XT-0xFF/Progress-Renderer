@@ -8,9 +8,7 @@ namespace ProgressRenderer
 {
 
     public class PRModSettings : ModSettings
-    {
-
-        public const float GapHeight = 10f;        
+    {     
         private static bool DefaultEnabled = true;
         private static RenderFeedback DefaultRenderFeedback = RenderFeedback.Window;
         private static bool DefaultRenderDesignations = false;
@@ -21,7 +19,7 @@ namespace ProgressRenderer
         private static int DefaultInterval = 24;
         private static int DefaultTimeOfDay = 8;
         private static EncodingType DefaultEncoding = EncodingType.UnityJPG;
-        private static int DefaultJPGQuality = 80;
+        private static int DefaultJPGQuality = 93;
         private static int DefaultPixelPerCell = 32;
         private static int DefaultOutputImageFixedHeight = 0;
         private static bool DefaultCreateSubdirs = false;
@@ -44,6 +42,7 @@ namespace ProgressRenderer
         public static bool createSubdirs = DefaultCreateSubdirs;
         public static FileNamePattern fileNamePattern = DefaultFileNamePattern;
 
+        public const float GapHeight = 10f;
         private static string outputImageFixedHeightBuffer;
 
         public PRModSettings() : base()
@@ -54,10 +53,10 @@ namespace ProgressRenderer
             }
         }
 
-        public void DoWindowContents(Rect rect)
+        public void DoWindowContents(Rect inRect)
         {
             Listing_Standard ls = new Listing_Standard();
-            ls.Begin(rect);
+            ls.Begin(inRect);
             ls.Gap(GapHeight);
 
             ls.CheckboxLabeled("LPR_SettingsEnabledLabel".Translate(), ref enabled, "LPR_SettingsEnabledDescription".Translate());
@@ -165,6 +164,7 @@ namespace ProgressRenderer
             Scribe_Values.Look(ref interval, "interval", DefaultInterval);
             Scribe_Values.Look(ref timeOfDay, "timeOfDay", DefaultTimeOfDay);
             Scribe_Values.Look(ref encoding, "encoding", DefaultEncoding);
+            Scribe_Values.Look(ref jpgQuality, "jpgQuality", DefaultJPGQuality);
             Scribe_Values.Look(ref pixelPerCell, "pixelPerCell", DefaultPixelPerCell);
             Scribe_Values.Look(ref outputImageFixedHeight, "outputImageFixedHeight", DefaultOutputImageFixedHeight);
             Scribe_Values.Look(ref exportPath, "exportPath", DesktopPath);

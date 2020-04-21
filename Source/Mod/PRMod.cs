@@ -21,7 +21,7 @@ namespace ProgressRenderer
         public override void DoSettingsWindowContents(Rect rect)
         {
             settings.DoWindowContents(rect);
-            settings.Write();
+            base.DoSettingsWindowContents(rect);
         }
 
     }
