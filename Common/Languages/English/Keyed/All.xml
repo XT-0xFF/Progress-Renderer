@@ -2,8 +2,10 @@
 <LanguageData>
 
   <!-- General -->
-	<EveryHours>Every {0} hours</EveryHours>
-	<EveryHour>Every hour</EveryHour>
+	<LPR_RenderEveryHours>{0} hours</LPR_RenderEveryHours>
+	<LPR_RenderEveryHour>hour</LPR_RenderEveryHour>
+  <LPR_RenderEveryDays>{0} days</LPR_RenderEveryDays>
+  <LPR_RenderEveryDay>day</LPR_RenderEveryDay>
 
   <!-- Messages -->
 	<LPR_MessageCornerMarkerAmount>There are now {0} corner markers on this map.</LPR_MessageCornerMarkerAmount>
@@ -28,15 +30,12 @@
 	<LPR_SettingsCategory>Progress Renderer</LPR_SettingsCategory>
 	<LPR_SettingsEnabledLabel>Enabled</LPR_SettingsEnabledLabel>
 	<LPR_SettingsEnabledDescription>When enabled, this mod takes automatic renderings of current maps while playing and uses the settings below. You can temporary disable this here so you don't have to remove the mod each time.</LPR_SettingsEnabledDescription>
-	<!--<LPR_SettingsShowMessageBoxLabel>Show message box</LPR_SettingsShowMessageBoxLabel>
-	<LPR_SettingsShowMessageBoxDescription>Show a message box on screen when the game is rendering the map. Deactivate this to only get a standard text message. (Useful when you just render a small area in a short interval and the message window interrupts playing.) (The message box is always deactivated when a multithreaded encoding method is selected.)</LPR_SettingsShowMessageBoxDescription>-->
-	<LPR_SettingsRenderFeedbackLabel>Render feedback</LPR_SettingsRenderFeedbackLabel>
-	<!--<LPR_SettingsRenderFeedbackDescription>Choose what kind of (visible) feedback you want to get when rendering starts.</LPR_SettingsRenderFeedbackDescription>-->
+  <LPR_SettingsRenderFeedbackLabel>Render feedback</LPR_SettingsRenderFeedbackLabel>
 	<LPR_RenderFeedback_None>None</LPR_RenderFeedback_None>
-	<LPR_RenderFeedback_Message>Message (in the top-left corner)</LPR_RenderFeedback_Message>
-	<LPR_RenderFeedback_Window>Window popup (like during autosave)</LPR_RenderFeedback_Window>
+	<LPR_RenderFeedback_Message>Message</LPR_RenderFeedback_Message>
+	<LPR_RenderFeedback_Window>Popup</LPR_RenderFeedback_Window>
 	<LPR_SettingsRenderSettingsLabel>Render settings</LPR_SettingsRenderSettingsLabel>
-	<LPR_SettingsRenderSettingsDescription>Configure some optional graphical elements that should be included in the rendered images. The map will always be rendered while some temporary parts like your current selection, targeters or ui text and the mounse cursor are never included.</LPR_SettingsRenderSettingsDescription>
+	<LPR_SettingsRenderSettingsDescription>Configure some optional graphical elements that should be included in the rendered images. The map will always be rendered while some temporary parts like your current selection, targeters or ui text and the mouse cursor are never included.</LPR_SettingsRenderSettingsDescription>
 	<LPR_SettingsRenderDesignationsLabel>Designations</LPR_SettingsRenderDesignationsLabel>
 	<LPR_SettingsRenderDesignationsDescription>Enable this when the rendered images should show designators. For example the mining, smoothing and plant cut designators.</LPR_SettingsRenderDesignationsDescription>
 	<LPR_SettingsRenderThingIconsLabel>Thing icons</LPR_SettingsRenderThingIconsLabel>
@@ -47,25 +46,23 @@
 	<LPR_SettingsRenderWeatherDescription>Enable this when the rendered images should contain the current ingame weather.</LPR_SettingsRenderWeatherDescription>
 	<LPR_SettingsSmoothRenderAreaStepsLabel>Smooth render area on change (set smoothing steps)</LPR_SettingsSmoothRenderAreaStepsLabel>
 	<LPR_SettingsSmoothRenderAreaStepsDescription>You can increase this if you want a smoother transition of your rendered area when you change the area with corner markers. Rendering will transition smoothly to the new area in the next X renderings. (Note that it may take a while to geet to the new area if you choose a high step value and a low render interval.)</LPR_SettingsSmoothRenderAreaStepsDescription>
-	<LPR_SettingsIntervalLabel>Render interval (every X days)</LPR_SettingsIntervalLabel>
+	<LPR_SettingsIntervalLabel>Render every</LPR_SettingsIntervalLabel>
 	<LPR_SettingsIntervalDescription>Choose the render interval, so how often a progress image should be taken. You can choose a frequency between once a quadrum and hourly.</LPR_SettingsIntervalDescription>
-	<LPR_SettingsTimeOfDayLabel>Render time of the day / Hour offset</LPR_SettingsTimeOfDayLabel>
+	<LPR_SettingsTimeOfDayLabel>Render at</LPR_SettingsTimeOfDayLabel>
 	<LPR_SettingsTimeOfDayDescription>Choose at which time (in hours) of the selected days the rendering should happen. If you chose an interval of multiple times per day above, this setting works as an offset.</LPR_SettingsTimeOfDayDescription>
 	<LPR_SettingsEncodingLabel>Exported image encoding</LPR_SettingsEncodingLabel>
-	<!--<LPR_SettingsEncodingDescription>Choose the encoding method of the rendered image. This defines the resulting image format and affects rendering speed as well as image quality and filesize.</LPR_SettingsEncodingDescription>-->
 	<LPR_ImgEncoding_png_unity>PNG (Unity)</LPR_ImgEncoding_png_unity>
   <LPR_ImgEncoding_jpg_unity>JPG (Unity)</LPR_ImgEncoding_jpg_unity>
 	<LPR_JPGQualityLabel>JPG Quality</LPR_JPGQualityLabel>
   <LPR_JPGQualityDescription>Higher values correspond to higher image quality, lower values correspond to smaller image size</LPR_JPGQualityDescription>
   <LPR_SettingsPixelPerCellLabel>Pixel per cell (for image resolution)</LPR_SettingsPixelPerCellLabel>
 	<LPR_SettingsPixelPerCellDescription>Define with how many pixels each ingame map cell should be displayed on the rendered image.</LPR_SettingsPixelPerCellDescription>
-	<LPR_SettingsOutputImageFixedHeightLabel>Scale rendered image to fixed height (in px)</LPR_SettingsOutputImageFixedHeightLabel>
-	<LPR_SettingsOutputImageFixedHeightAdditionalInfo>(set to 0 to deactivate)</LPR_SettingsOutputImageFixedHeightAdditionalInfo>
-	<LPR_SettingsOutputImageFixedHeightDescription>Set this if you want the rendered output image to have a fixed height. The width will be calculated to preserve the aspect ratio. (Useful when you change the rendered area size mid-game and and plan to animate the image sequence later, so you can work with one fixed image size.)</LPR_SettingsOutputImageFixedHeightDescription>
+	<LPR_SettingsScaleOutputImageLabel>Rescale to fixed height</LPR_SettingsScaleOutputImageLabel>
+  <LPR_SettingsScaleOutputImageDescription>Set this if you want the rendered output image to have a fixed height. The width will be calculated to preserve the aspect ratio. Useful when you change the rendered area size mid-game and and plan to animate the image sequence later, so you can work with one fixed image size.</LPR_SettingsScaleOutputImageDescription>
+  <LPR_SettingsOutputImageFixedHeightLabel>Output height (px)</LPR_SettingsOutputImageFixedHeightLabel>
 	<LPR_SettingsExportPathLabel>Export path</LPR_SettingsExportPathLabel>
 	<LPR_SettingsExportPathDescription>The path where rendered images will be saved. Note that this must be a valid path to an existing and accessible directory on your computer. You can copy+paste a directory from your file explorer here for simple editing.</LPR_SettingsExportPathDescription>
-	<LPR_SettingsFileNamePatternLabel>Exported image filename pattern</LPR_SettingsFileNamePatternLabel>
-	<!--<LPR_SettingsFileNamePatternDescription></LPR_SettingsFileNamePatternDescription>-->
+	<LPR_SettingsFileNamePatternLabel>Exported image name pattern</LPR_SettingsFileNamePatternLabel>
 	<LPR_FileNamePattern_DateTime>Ingame date and time</LPR_FileNamePattern_DateTime>
 	<LPR_FileNamePattern_Numbered>Numbered consecutively (for each map)</LPR_FileNamePattern_Numbered>
 	<LPR_FileNamePattern_BothTmpCopy>Both (numbered copy in tmp subdir)</LPR_FileNamePattern_BothTmpCopy>

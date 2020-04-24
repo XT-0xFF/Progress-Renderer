@@ -21,7 +21,8 @@ namespace ProgressRenderer
         private static EncodingType DefaultEncoding = EncodingType.UnityJPG;
         private static int DefaultJPGQuality = 93;
         private static int DefaultPixelPerCell = 32;
-        private static int DefaultOutputImageFixedHeight = 0;
+        private static bool DefaultScaleOutputImage = false;
+        private static int DefaultOutputImageFixedHeight = 1080;
         private static bool DefaultCreateSubdirs = false;
         private static FileNamePattern DefaultFileNamePattern = FileNamePattern.DateTime;
 
@@ -33,17 +34,20 @@ namespace ProgressRenderer
         public static bool renderWeather = DefaultRenderWeather;
         public static int smoothRenderAreaSteps = DefaultSmoothRenderAreaSteps;
         public static int interval = DefaultInterval;
+        private static int whichInterval = RenderIntervalHelper.Intervals.IndexOf(interval);
         public static int timeOfDay = DefaultTimeOfDay;
         public static EncodingType encoding = DefaultEncoding;
         public static int jpgQuality = DefaultJPGQuality;
         public static int pixelPerCell = DefaultPixelPerCell;
+        public static bool scaleOutputImage = DefaultScaleOutputImage;
         public static int outputImageFixedHeight = DefaultOutputImageFixedHeight;
         public static string exportPath;
         public static bool createSubdirs = DefaultCreateSubdirs;
         public static FileNamePattern fileNamePattern = DefaultFileNamePattern;
 
-        public const float GapHeight = 10f;
         private static string outputImageFixedHeightBuffer;
+        public static bool migratedOutputImageSettings = false;
+        public static bool migratedInterval = false;
 
         public PRModSettings() : base()
         {
@@ -53,16 +57,34 @@ namespace ProgressRenderer
             }
         }
 
-        public void DoWindowContents(Rect inRect)
+        public void DoWindowContents(Rect settingsRect)
         {
+            if (!migratedOutputImageSettings)
+            {
+                scaleOutputImage = outputImageFixedHeight > 0;
+                if (!scaleOutputImage) outputImageFixedHeight = DefaultOutputImageFixedHeight;
+                migratedOutputImageSettings = true;
+                Log.Warning("Migrated output image settings");
+            }
+            if(!migratedInterval)
+            {
+                whichInterval = RenderIntervalHelper.Intervals.IndexOf(interval);
+                if (whichInterval < 0) whichInterval = RenderIntervalHelper.Intervals.IndexOf(DefaultInterval);
+                migratedInterval = true;
+                Log.Warning("Migrated interval settings");
+            } else
+            {
+                interval = RenderIntervalHelper.Intervals[whichInterval];
+            }
+
             Listing_Standard ls = new Listing_Standard();
-            ls.Begin(inRect);
-            ls.Gap(GapHeight);
+            var leftHalf = new Rect(settingsRect.x, settingsRect.y, settingsRect.width / 2 - 12f, settingsRect.height);
+            var rightHalf = new Rect(settingsRect.x + settingsRect.width / 2 + 12f, settingsRect.y, settingsRect.width / 2 - 12f, settingsRect.height);
 
+            ls.Begin(leftHalf);
+
+            // Left half (general settings)
             ls.CheckboxLabeled("LPR_SettingsEnabledLabel".Translate(), ref enabled, "LPR_SettingsEnabledDescription".Translate());
-            ls.Gap(GapHeight);
-
-            // Backup original values
             TextAnchor backupAnchor = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleLeft;
             if (ls.ButtonTextLabeled("LPR_SettingsRenderFeedbackLabel".Translate(), ("LPR_RenderFeedback_" + renderFeedback).Translate()))
@@ -78,23 +100,32 @@ namespace ProgressRenderer
                 }
                 Find.WindowStack.Add(new FloatMenu(menuEntries));
             }
-            // Restore original values
             Text.Anchor = backupAnchor;
 
-            ls.GapGapLine(GapHeight);
+            ls.Gap();
+            ls.Label("LPR_SettingsRenderSettingsLabel".Translate(), -1, "LPR_SettingsRenderSettingsDescription".Translate());
+            ls.GapLine();
+            ls.CheckboxLabeled("LPR_SettingsRenderDesignationsLabel".Translate(), ref renderDesignations, "LPR_SettingsRenderDesignationsDescription".Translate());
+            ls.CheckboxLabeled("LPR_SettingsRenderThingIconsLabel".Translate(), ref renderThingIcons, "LPR_SettingsRenderThingIconsDescription".Translate());
+            ls.CheckboxLabeled("LPR_SettingsRenderGameConditionsLabel".Translate(), ref renderGameConditions, "LPR_SettingsRenderGameConditionsDescription".Translate());
+            ls.CheckboxLabeled("LPR_SettingsRenderWeatherLabel".Translate(), ref renderWeather, "LPR_SettingsRenderWeatherDescription".Translate());
+            ls.GapLine();
 
-            ls.CheckboxGroupLabeled("LPR_SettingsRenderSettingsLabel".Translate(), "LPR_SettingsRenderSettingsDescription".Translate(), "LPR_SettingsRenderDesignationsLabel".Translate(), ref renderDesignations, "LPR_SettingsRenderDesignationsDescription".Translate(), "LPR_SettingsRenderThingIconsLabel".Translate(), ref renderThingIcons, "LPR_SettingsRenderThingIconsDescription".Translate());
-            ls.CheckboxGroupLabeled(null, "LPR_SettingsRenderSettingsDescription".Translate(), "LPR_SettingsRenderGameConditionsLabel".Translate(), ref renderGameConditions, "LPR_SettingsRenderGameConditionsDescription".Translate(), "LPR_SettingsRenderWeatherLabel".Translate(), ref renderWeather, "LPR_SettingsRenderWeatherDescription".Translate());
-            ls.Gap(GapHeight);
-            ls.SliderLabeled("LPR_SettingsSmoothRenderAreaStepsLabel".Translate(), ref smoothRenderAreaSteps, 0, 30, null, "LPR_SettingsSmoothRenderAreaStepsDescription".Translate());
-            ls.GapGapLine(GapHeight);
+            ls.Gap();
+            ls.Label("LPR_SettingsSmoothRenderAreaStepsLabel".Translate() + smoothRenderAreaSteps.ToString(": #0"), -1, "LPR_SettingsSmoothRenderAreaStepsDescription".Translate());
+            smoothRenderAreaSteps = (int)ls.Slider(smoothRenderAreaSteps, 0, 30);
 
-            ls.FixedFrequencySliderLabeled("LPR_SettingsIntervalLabel".Translate(), ref interval, "LPR_SettingsIntervalDescription".Translate());
-            ls.Gap(GapHeight);
-            ls.SliderLabeled("LPR_SettingsTimeOfDayLabel".Translate(), ref timeOfDay, 0, 23, "00 h", "LPR_SettingsTimeOfDayDescription".Translate());
-            ls.GapGapLine(GapHeight);
+            ls.Label($"{"LPR_SettingsIntervalLabel".Translate()} {RenderIntervalHelper.GetLabel(interval)}", -1, "LPR_SettingsIntervalDescription".Translate());
+            whichInterval = (int)ls.Slider(whichInterval, 0, RenderIntervalHelper.Intervals.Count - 1);
+            interval = RenderIntervalHelper.Intervals[whichInterval];
+            ls.Label("LPR_SettingsTimeOfDayLabel".Translate() + timeOfDay.ToString(" 00H"), -1, "LPR_SettingsTimeOfDayDescription".Translate());
+            timeOfDay = (int)ls.Slider(timeOfDay, 0, 23);
 
-            // Backup original values
+            ls.End();
+
+            // Right half (file settings)
+            ls.Begin(rightHalf);
+
             backupAnchor = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleLeft;
             if (ls.ButtonTextLabeled("LPR_SettingsEncodingLabel".Translate(), ("LPR_ImgEncoding_" + EnumUtils.ToFriendlyString(encoding)).Translate()))
@@ -110,25 +141,36 @@ namespace ProgressRenderer
                 }
                 Find.WindowStack.Add(new FloatMenu(menuEntries));
             }
-            // Restore original values
             Text.Anchor = backupAnchor;
 
-            ls.Gap(GapHeight);
-            if (PRModSettings.encoding == EncodingType.UnityJPG)
+            if (encoding == EncodingType.UnityJPG)
             {
-                ls.SliderLabeled("LPR_JPGQualityLabel".Translate(), ref jpgQuality, 1, 100, "###", "LPR_JPGQualityDescription".Translate());
-                ls.Gap(GapHeight);
+                ls.Label("LPR_JPGQualityLabel".Translate() + jpgQuality.ToString(": ##0"), -1, "LPR_JPGQualityDescription".Translate());
+                jpgQuality = (int)ls.Slider(jpgQuality, 1, 100);
             }
-            ls.SliderLabeled("LPR_SettingsPixelPerCellLabel".Translate(), ref pixelPerCell, 1, 64, "##0 ppc", "LPR_SettingsPixelPerCellDescription".Translate());
-            ls.Gap(GapHeight);
-            ls.IntegerFieldLabeled("LPR_SettingsOutputImageFixedHeightLabel".Translate(), ref outputImageFixedHeight, ref outputImageFixedHeightBuffer, "LPR_SettingsOutputImageFixedHeightAdditionalInfo".Translate(), "LPR_SettingsOutputImageFixedHeightDescription".Translate());
-            ls.Gap(GapHeight);
-            ls.TextFieldLabeled("LPR_SettingsExportPathLabel".Translate(), ref exportPath, "LPR_SettingsExportPathDescription".Translate());
-            ls.Gap(GapHeight);
-            ls.CheckboxLabeled("LPR_SettingsCreateSubdirsLabel".Translate(), ref createSubdirs, "LPR_SettingsCreateSubdirsDescription".Translate());
-            ls.Gap(GapHeight);
+
+            ls.Label("LPR_SettingsPixelPerCellLabel".Translate() + pixelPerCell.ToString(": ##0 pcc"), -1, "LPR_SettingsPixelPerCellDescription".Translate());
+            pixelPerCell = (int)ls.Slider(pixelPerCell, 1, 64);
             
-            // Backup original values
+            ls.Gap();
+            ls.CheckboxLabeled("LPR_SettingsScaleOutputImageLabel".Translate(), ref scaleOutputImage, "LPR_SettingsScaleOutputImageDescription".Translate());
+            if (scaleOutputImage)
+            {
+                ls.Label("LPR_SettingsOutputImageFixedHeightLabel".Translate());
+                ls.TextFieldNumeric(ref outputImageFixedHeight, ref outputImageFixedHeightBuffer, 1);
+                ls.Gap();
+            }
+
+            ls.GapLine();
+            if(scaleOutputImage)
+            {
+                ls.Gap(); // All about that visual balance
+            }
+            ls.Label("LPR_SettingsExportPathLabel".Translate(), -1, "LPR_SettingsExportPathDescription".Translate());
+            exportPath = ls.TextEntry(exportPath);
+
+            ls.Gap();
+            ls.CheckboxLabeled("LPR_SettingsCreateSubdirsLabel".Translate(), ref createSubdirs, "LPR_SettingsCreateSubdirsDescription".Translate());
             backupAnchor = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleLeft;
             if (ls.ButtonTextLabeled("LPR_SettingsFileNamePatternLabel".Translate(), ("LPR_FileNamePattern_" + fileNamePattern).Translate()))
@@ -137,7 +179,6 @@ namespace ProgressRenderer
                 var patterns = (FileNamePattern[])Enum.GetValues(typeof(FileNamePattern));
                 foreach(var pattern in patterns)
                 {
-                    //TODO: friendly string here as well
                     menuEntries.Add(new FloatMenuOption(("LPR_FileNamePattern_" + EnumUtils.ToFriendlyString(pattern)).Translate(), delegate
                     {
                         fileNamePattern = pattern;
@@ -145,7 +186,6 @@ namespace ProgressRenderer
                 }
                 Find.WindowStack.Add(new FloatMenu(menuEntries));
             }
-            // Restore original values
             Text.Anchor = backupAnchor;
 
             ls.End();
@@ -161,15 +201,19 @@ namespace ProgressRenderer
             Scribe_Values.Look(ref renderGameConditions, "renderGameConditions", DefaultRenderGameConditions);
             Scribe_Values.Look(ref renderWeather, "renderWeather", DefaultRenderWeather);
             Scribe_Values.Look(ref smoothRenderAreaSteps, "smoothRenderAreaSteps", DefaultSmoothRenderAreaSteps);
-            Scribe_Values.Look(ref interval, "interval", DefaultInterval);
+            Scribe_Values.Look(ref whichInterval, "whichInterval", RenderIntervalHelper.Intervals.IndexOf(DefaultInterval));
             Scribe_Values.Look(ref timeOfDay, "timeOfDay", DefaultTimeOfDay);
             Scribe_Values.Look(ref encoding, "encoding", DefaultEncoding);
             Scribe_Values.Look(ref jpgQuality, "jpgQuality", DefaultJPGQuality);
             Scribe_Values.Look(ref pixelPerCell, "pixelPerCell", DefaultPixelPerCell);
+            Scribe_Values.Look(ref scaleOutputImage, "scaleOutputImage", DefaultScaleOutputImage);
             Scribe_Values.Look(ref outputImageFixedHeight, "outputImageFixedHeight", DefaultOutputImageFixedHeight);
             Scribe_Values.Look(ref exportPath, "exportPath", DesktopPath);
             Scribe_Values.Look(ref createSubdirs, "createSubdirs", DefaultCreateSubdirs);
             Scribe_Values.Look(ref fileNamePattern, "fileNamePattern", DefaultFileNamePattern);
+
+            Scribe_Values.Look(ref migratedOutputImageSettings, "migratedOutputImageSettings", false, true);
+            Scribe_Values.Look(ref migratedInterval, "migratedInterval", false, true);
         }
 
         private static string DesktopPath
@@ -177,6 +221,32 @@ namespace ProgressRenderer
             get
             {
                 return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            }
+        }
+
+        private static class RenderIntervalHelper
+        {
+            public static readonly List<int> Intervals = new List<int>() { 15 * 24, 10 * 24, 6 * 24, 5 * 24, 4 * 24, 3 * 24, 2 * 24, 24, 12, 8, 6, 4, 3, 2, 1 };
+            public static readonly List<int> WhichLabelsForInterval = new List<int>() { 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3 };
+            public static readonly List<string> Labels = new List<string>() { "LPR_RenderEveryDays", "LPR_RenderEveryDay", "LPR_RenderEveryHours", "LPR_RenderEveryHour" };
+
+            public static string GetLabel(int interval)
+            {
+                int labelIndex = Intervals.IndexOf(interval);
+                if (labelIndex < 0)
+                {
+                    Log.Error("Wrong configuration found for ProgressRenderer.PRModSettings.interval. Using default value.");
+                    labelIndex = Intervals.IndexOf(DefaultInterval);
+                }
+                
+                var whichLabel = WhichLabelsForInterval[labelIndex];
+                float labelVal = interval;
+                if (whichLabel == 0)
+                {
+                    labelVal /= 24f;
+                }
+
+                return Labels[whichLabel].Translate(labelVal.ToString("#0"));
             }
         }
 

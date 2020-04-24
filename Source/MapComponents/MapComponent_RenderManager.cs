@@ -240,7 +240,7 @@ namespace ProgressRenderer
             // Calculate basic values that are used for rendering
             int imageWidth;
             int imageHeight;
-            if (PRModSettings.outputImageFixedHeight > 0)
+            if (PRModSettings.scaleOutputImage)
             {
                 imageHeight = PRModSettings.outputImageFixedHeight;
                 imageWidth = (int)((float)imageHeight / distZ * distX);

@@ -93,7 +93,6 @@
     <Compile Include="Source\Enum\EnumUtils.cs" />
     <Compile Include="Source\Enum\FileNamePattern.cs" />
     <Compile Include="Source\Enum\RenderFeedback.cs" />
-    <Compile Include="Source\Extension\Listing_StandardExtension.cs" />
     <Compile Include="Source\Gen\MoreGenDate.cs" />
     <Compile Include="Source\Harmony_Patches\HarmonySetup.cs" />
     <Compile Include="Source\Harmony_Patches\Harmony_AreaManager.cs" />
@@ -114,7 +113,6 @@
     <Compile Include="Source\Enum\EncodingType.cs" />
     <Compile Include="Source\Mod\PRMod.cs" />
     <Compile Include="Source\Mod\PRModSettings.cs" />
-    <Compile Include="Source\UI\MoreWidgets.cs" />
     <Compile Include="Source\UI\SmallMessageBox.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +127,7 @@
     <Content Include="Common\Textures\Designations\CornerMarker.png" />
     <Content Include="Common\Textures\UI\Designators\CornerMarkerOff.png" />
     <Content Include="Common\Textures\UI\Designators\CornerMarkerOn.png" />
+    <Content Include="News\UpdateFeatures.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitattributes" />
@@ -154,7 +153,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call $(ProjectDir)Install.bat $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Common v1.1" "LoadFolders.xml"</PostBuildEvent>
+    <PostBuildEvent>call $(ProjectDir)Install.bat $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Common News v1.1" "LoadFolders.xml"</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
