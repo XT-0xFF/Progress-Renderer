@@ -46,6 +46,8 @@ namespace ProgressRenderer
         public static FileNamePattern fileNamePattern = DefaultFileNamePattern;
 
         private static string outputImageFixedHeightBuffer;
+
+        public static bool DoMigrations { get; internal set; } = true;
         public static bool migratedOutputImageSettings = false;
         public static bool migratedInterval = false;
 
@@ -59,23 +61,25 @@ namespace ProgressRenderer
 
         public void DoWindowContents(Rect settingsRect)
         {
-            if (!migratedOutputImageSettings)
+            if (DoMigrations)
             {
-                scaleOutputImage = outputImageFixedHeight > 0;
-                if (!scaleOutputImage) outputImageFixedHeight = DefaultOutputImageFixedHeight;
-                migratedOutputImageSettings = true;
-                Log.Warning("Migrated output image settings");
+                if (!migratedOutputImageSettings)
+                {
+                    scaleOutputImage = outputImageFixedHeight > 0;
+                    if (!scaleOutputImage) outputImageFixedHeight = DefaultOutputImageFixedHeight;
+                    migratedOutputImageSettings = true;
+                    Log.Warning("Migrated output image settings");
+                }
+                if (!migratedInterval)
+                {
+                    whichInterval = RenderIntervalHelper.Intervals.IndexOf(interval);
+                    if (whichInterval < 0) whichInterval = RenderIntervalHelper.Intervals.IndexOf(DefaultInterval);
+                    migratedInterval = true;
+                    Log.Warning("Migrated interval settings");
+                }
             }
-            if(!migratedInterval)
-            {
-                whichInterval = RenderIntervalHelper.Intervals.IndexOf(interval);
-                if (whichInterval < 0) whichInterval = RenderIntervalHelper.Intervals.IndexOf(DefaultInterval);
-                migratedInterval = true;
-                Log.Warning("Migrated interval settings");
-            } else
-            {
-                interval = RenderIntervalHelper.Intervals[whichInterval];
-            }
+
+            interval = RenderIntervalHelper.Intervals[whichInterval];
 
             Listing_Standard ls = new Listing_Standard();
             var leftHalf = new Rect(settingsRect.x, settingsRect.y, settingsRect.width / 2 - 12f, settingsRect.height);
@@ -223,7 +227,6 @@ namespace ProgressRenderer
                 return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             }
         }
-
         private static class RenderIntervalHelper
         {
             public static readonly List<int> Intervals = new List<int>() { 15 * 24, 10 * 24, 6 * 24, 5 * 24, 4 * 24, 3 * 24, 2 * 24, 24, 12, 8, 6, 4, 3, 2, 1 };

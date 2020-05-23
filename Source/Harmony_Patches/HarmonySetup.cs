@@ -11,8 +11,7 @@ namespace ProgressRenderer
         static HarmonySetup()
         {
             var harmony = new Harmony("rimworld.neptimus7.progressrenderer");
-            //Harmony.DEBUG = true;
-            harmony.PatchAll(Assembly.GetExecutingAssembly());            
+            harmony.PatchAll(Assembly.GetExecutingAssembly());      
         }
     }
 }
