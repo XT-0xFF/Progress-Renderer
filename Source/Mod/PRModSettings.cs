@@ -65,7 +65,9 @@ namespace ProgressRenderer
             {
                 if (!migratedOutputImageSettings)
                 {
-                    scaleOutputImage = outputImageFixedHeight > 0;
+                    //Yes, I know for the people who used to use 1080 as scaling and have upgraded this will turn off scaling for them.
+                    //Unfortunately I don't think there's a better way to handle this.
+                    scaleOutputImage = outputImageFixedHeight > 0 && outputImageFixedHeight != DefaultOutputImageFixedHeight;
                     if (!scaleOutputImage) outputImageFixedHeight = DefaultOutputImageFixedHeight;
                     migratedOutputImageSettings = true;
                     Log.Warning("Migrated output image settings");
