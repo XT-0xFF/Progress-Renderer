@@ -6,7 +6,7 @@ namespace ProgressRenderer
 {
 
     [StaticConstructorOnStartup]
-    class HarmonySetup
+    static class HarmonySetup
     {
         static HarmonySetup()
         {

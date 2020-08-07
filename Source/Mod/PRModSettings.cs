@@ -8,7 +8,7 @@ namespace ProgressRenderer
 {
 
     public class PRModSettings : ModSettings
-    {     
+    {
         private static bool DefaultEnabled = true;
         private static RenderFeedback DefaultRenderFeedback = RenderFeedback.Window;
         private static bool DefaultRenderDesignations = false;
@@ -33,8 +33,7 @@ namespace ProgressRenderer
         public static bool renderGameConditions = DefaultRenderGameConditions;
         public static bool renderWeather = DefaultRenderWeather;
         public static int smoothRenderAreaSteps = DefaultSmoothRenderAreaSteps;
-        public static int interval = DefaultInterval;
-        private static int whichInterval = RenderIntervalHelper.Intervals.IndexOf(interval);
+        private static int whichInterval = RenderIntervalHelper.Intervals.IndexOf(DefaultInterval);
         public static int timeOfDay = DefaultTimeOfDay;
         public static EncodingType encoding = DefaultEncoding;
         public static int jpgQuality = DefaultJPGQuality;
@@ -81,8 +80,6 @@ namespace ProgressRenderer
                 }
             }
 
-            interval = RenderIntervalHelper.Intervals[whichInterval];
-
             Listing_Standard ls = new Listing_Standard();
             var leftHalf = new Rect(settingsRect.x, settingsRect.y, settingsRect.width / 2 - 12f, settingsRect.height);
             var rightHalf = new Rect(settingsRect.x + settingsRect.width / 2 + 12f, settingsRect.y, settingsRect.width / 2 - 12f, settingsRect.height);
@@ -123,7 +120,6 @@ namespace ProgressRenderer
 
             ls.Label($"{"LPR_SettingsIntervalLabel".Translate()} {RenderIntervalHelper.GetLabel(interval)}", -1, "LPR_SettingsIntervalDescription".Translate());
             whichInterval = (int)ls.Slider(whichInterval, 0, RenderIntervalHelper.Intervals.Count - 1);
-            interval = RenderIntervalHelper.Intervals[whichInterval];
             ls.Label("LPR_SettingsTimeOfDayLabel".Translate() + timeOfDay.ToString(" 00H"), -1, "LPR_SettingsTimeOfDayDescription".Translate());
             timeOfDay = (int)ls.Slider(timeOfDay, 0, 23);
 
@@ -138,7 +134,7 @@ namespace ProgressRenderer
             {
                 List<FloatMenuOption> menuEntries = new List<FloatMenuOption>();
                 var encodingTypes = (EncodingType[])Enum.GetValues(typeof(EncodingType));
-                foreach(var encodingType in encodingTypes)
+                foreach (var encodingType in encodingTypes)
                 {
                     menuEntries.Add(new FloatMenuOption(("LPR_ImgEncoding_" + EnumUtils.ToFriendlyString(encodingType)).Translate(), delegate
                     {
@@ -157,7 +153,7 @@ namespace ProgressRenderer
 
             ls.Label("LPR_SettingsPixelPerCellLabel".Translate() + pixelPerCell.ToString(": ##0 pcc"), -1, "LPR_SettingsPixelPerCellDescription".Translate());
             pixelPerCell = (int)ls.Slider(pixelPerCell, 1, 64);
-            
+
             ls.Gap();
             ls.CheckboxLabeled("LPR_SettingsScaleOutputImageLabel".Translate(), ref scaleOutputImage, "LPR_SettingsScaleOutputImageDescription".Translate());
             if (scaleOutputImage)
@@ -168,7 +164,7 @@ namespace ProgressRenderer
             }
 
             ls.GapLine();
-            if(scaleOutputImage)
+            if (scaleOutputImage)
             {
                 ls.Gap(); // All about that visual balance
             }
@@ -183,7 +179,7 @@ namespace ProgressRenderer
             {
                 List<FloatMenuOption> menuEntries = new List<FloatMenuOption>();
                 var patterns = (FileNamePattern[])Enum.GetValues(typeof(FileNamePattern));
-                foreach(var pattern in patterns)
+                foreach (var pattern in patterns)
                 {
                     menuEntries.Add(new FloatMenuOption(("LPR_FileNamePattern_" + EnumUtils.ToFriendlyString(pattern)).Translate(), delegate
                     {
@@ -222,6 +218,14 @@ namespace ProgressRenderer
             Scribe_Values.Look(ref migratedInterval, "migratedInterval", false, true);
         }
 
+        public static int interval
+        {
+            get
+            {
+                return RenderIntervalHelper.Intervals[whichInterval];
+            }
+        }
+
         private static string DesktopPath
         {
             get
@@ -229,6 +233,7 @@ namespace ProgressRenderer
                 return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             }
         }
+
         private static class RenderIntervalHelper
         {
             public static readonly List<int> Intervals = new List<int>() { 15 * 24, 10 * 24, 6 * 24, 5 * 24, 4 * 24, 3 * 24, 2 * 24, 24, 12, 8, 6, 4, 3, 2, 1 };
@@ -243,7 +248,7 @@ namespace ProgressRenderer
                     Log.Error("Wrong configuration found for ProgressRenderer.PRModSettings.interval. Using default value.");
                     labelIndex = Intervals.IndexOf(DefaultInterval);
                 }
-                
+
                 var whichLabel = WhichLabelsForInterval[labelIndex];
                 float labelVal = interval;
                 if (whichLabel == 0)

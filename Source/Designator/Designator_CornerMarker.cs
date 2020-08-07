@@ -13,9 +13,9 @@ namespace ProgressRenderer
         public Designator_CornerMarker(DesignateMode mode)
 		{
 			this.mode = mode;
-			this.soundDragSustain = SoundDefOf.Designate_DragStandard;
-			this.soundDragChanged = SoundDefOf.Designate_DragStandard_Changed;
-			this.useMouseIcon = true;
+			soundDragSustain = SoundDefOf.Designate_DragStandard;
+			soundDragChanged = SoundDefOf.Designate_DragStandard_Changed;
+			useMouseIcon = true;
 		}
 
 		protected override DesignationDef Designation

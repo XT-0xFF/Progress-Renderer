@@ -20,7 +20,8 @@ namespace ProgressRenderer
             }
         }
 
-        public override string SettingsCategory() {
+        public override string SettingsCategory()
+        {
             return "LPR_SettingsCategory".Translate();
         }
 
