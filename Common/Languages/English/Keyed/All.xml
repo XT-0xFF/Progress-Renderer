@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LanguageData>
 
-  <!-- General -->
+	<!-- General -->
 	<LPR_RenderEveryHours>{0} hours</LPR_RenderEveryHours>
 	<LPR_RenderEveryHour>hour</LPR_RenderEveryHour>
-  <LPR_RenderEveryDays>{0} days</LPR_RenderEveryDays>
-  <LPR_RenderEveryDay>day</LPR_RenderEveryDay>
+	<LPR_RenderEveryDays>{0} days</LPR_RenderEveryDays>
+	<LPR_RenderEveryDay>day</LPR_RenderEveryDay>
 
-  <!-- Messages -->
+	<!-- Messages -->
 	<LPR_MessageCornerMarkerAmount>There are now {0} corner markers on this map.</LPR_MessageCornerMarkerAmount>
 	<LPR_MessageCornerMarkerTooLess>Rendering needs 2 markers to limit the rendered area. Now the full map will be rendered.</LPR_MessageCornerMarkerTooLess>
 	<LPR_MessageCornerMarkerTooMany>Rendering will create and use a virtual rect around all markers. You may want to remove unnecessary ones.</LPR_MessageCornerMarkerTooMany>
@@ -17,20 +17,20 @@
 	<LPR_MessageCornerMarkersRectRatioDefined>Aspect ratio is {0} ({1}).</LPR_MessageCornerMarkersRectRatioDefined>
 	<LPR_MessageCornerMarkesRectHeightTooLow>Height is too low. This will result in incorrect renderings. More than 20 cells height are recommended.</LPR_MessageCornerMarkesRectHeightTooLow>
 
-  <!-- Designation -->
+	<!-- Designation -->
 	<DesignatorCornerMarker>Rendering corner marker</DesignatorCornerMarker>
 	<DesignatorCornerMarkerDesc>Place corner markers for map rendering. Placing 2 will limit the rendering to only render the enclosed area.</DesignatorCornerMarkerDesc>
 	<DesignatorConerMarkerRemove>Remove corner marker</DesignatorConerMarkerRemove>
 	<DesignatorCornerMarkerRemoveDesc>Remove corner markers for map rendering. Removing all will let the rendering render the full map.</DesignatorCornerMarkerRemoveDesc>
 
-  <!-- Misc -->
+	<!-- Misc -->
 	<LPR_Rendering>Rendering map image...</LPR_Rendering>
 
-  <!-- Settings -->
+	<!-- Settings -->
 	<LPR_SettingsCategory>Progress Renderer</LPR_SettingsCategory>
 	<LPR_SettingsEnabledLabel>Enabled</LPR_SettingsEnabledLabel>
 	<LPR_SettingsEnabledDescription>When enabled, this mod takes automatic renderings of current maps while playing and uses the settings below. You can temporary disable this here so you don't have to remove the mod each time.</LPR_SettingsEnabledDescription>
-  <LPR_SettingsRenderFeedbackLabel>Render feedback</LPR_SettingsRenderFeedbackLabel>
+	<LPR_SettingsRenderFeedbackLabel>Render feedback</LPR_SettingsRenderFeedbackLabel>
 	<LPR_RenderFeedback_None>None</LPR_RenderFeedback_None>
 	<LPR_RenderFeedback_Message>Message</LPR_RenderFeedback_Message>
 	<LPR_RenderFeedback_Window>Popup</LPR_RenderFeedback_Window>
@@ -52,14 +52,14 @@
 	<LPR_SettingsTimeOfDayDescription>Choose at which time (in hours) of the selected days the rendering should happen. If you chose an interval of multiple times per day above, this setting works as an offset.</LPR_SettingsTimeOfDayDescription>
 	<LPR_SettingsEncodingLabel>Exported image encoding</LPR_SettingsEncodingLabel>
 	<LPR_ImgEncoding_png_unity>PNG (Unity)</LPR_ImgEncoding_png_unity>
-  <LPR_ImgEncoding_jpg_unity>JPG (Unity)</LPR_ImgEncoding_jpg_unity>
+	<LPR_ImgEncoding_jpg_unity>JPG (Unity)</LPR_ImgEncoding_jpg_unity>
 	<LPR_JPGQualityLabel>JPG Quality</LPR_JPGQualityLabel>
-  <LPR_JPGQualityDescription>Higher values correspond to higher image quality, lower values correspond to smaller image size</LPR_JPGQualityDescription>
-  <LPR_SettingsPixelPerCellLabel>Pixel per cell (for image resolution)</LPR_SettingsPixelPerCellLabel>
+	<LPR_JPGQualityDescription>Higher values correspond to higher image quality, lower values correspond to smaller image size</LPR_JPGQualityDescription>
+	<LPR_SettingsPixelPerCellLabel>Pixel per cell (for image resolution)</LPR_SettingsPixelPerCellLabel>
 	<LPR_SettingsPixelPerCellDescription>Define with how many pixels each ingame map cell should be displayed on the rendered image.</LPR_SettingsPixelPerCellDescription>
 	<LPR_SettingsScaleOutputImageLabel>Rescale to fixed height</LPR_SettingsScaleOutputImageLabel>
-  <LPR_SettingsScaleOutputImageDescription>Set this if you want the rendered output image to have a fixed height. The width will be calculated to preserve the aspect ratio. Useful when you change the rendered area size mid-game and and plan to animate the image sequence later, so you can work with one fixed image size.</LPR_SettingsScaleOutputImageDescription>
-  <LPR_SettingsOutputImageFixedHeightLabel>Output height (px)</LPR_SettingsOutputImageFixedHeightLabel>
+	<LPR_SettingsScaleOutputImageDescription>Set this if you want the rendered output image to have a fixed height. The width will be calculated to preserve the aspect ratio. Useful when you change the rendered area size mid-game and and plan to animate the image sequence later, so you can work with one fixed image size.</LPR_SettingsScaleOutputImageDescription>
+	<LPR_SettingsOutputImageFixedHeightLabel>Output height (px)</LPR_SettingsOutputImageFixedHeightLabel>
 	<LPR_SettingsExportPathLabel>Export path</LPR_SettingsExportPathLabel>
 	<LPR_SettingsExportPathDescription>The path where rendered images will be saved. Note that this must be a valid path to an existing and accessible directory on your computer. You can copy+paste a directory from your file explorer here for simple editing.</LPR_SettingsExportPathDescription>
 	<LPR_SettingsFileNamePatternLabel>Exported image name pattern</LPR_SettingsFileNamePatternLabel>

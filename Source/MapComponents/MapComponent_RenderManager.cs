@@ -2,20 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
 using HarmonyLib;
 using ProgressRenderer.Source.Enum;
 using RimWorld;
-using RimWorld.Planet; 
+using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 
 namespace ProgressRenderer
 {
-
     public class MapComponent_RenderManager : MapComponent
     {
-
         private const int RenderTextureSize = 4096;
 
         public static int nextGlobalRenderManagerTickOffset = 0;
@@ -34,14 +32,13 @@ namespace ProgressRenderer
         private float rsTargetEndZ = -1f;
         private float rsCurrentPosition = 1f;
 
+        private int imageWidth, imageHeight;
         private Texture2D imageTexture;
-        private byte[] imageTextureRawData;
-        private int imageTextureWidth;
-        private int imageTextureHeight;
+
+        private Task EncodingTask;
 
         private bool manuallyTriggered = false;
-        private bool encodingInt = false;
-        Thread encodeThread;
+        private bool encoding = false;
         private bool ctrlEncodingPost = false;
         private SmallMessageBox messageBox;
 
@@ -164,7 +161,7 @@ namespace ProgressRenderer
                 switchedMap = true;
                 Current.Game.CurrentMap = map;
             }
-            
+
             // Close world view if needed
             bool rememberedWorldRendered = WorldRendererUtility.WorldRenderedNow;
             if (rememberedWorldRendered)
@@ -236,35 +233,40 @@ namespace ProgressRenderer
 
             float distX = endX - startX;
             float distZ = endZ - startZ;
-            
+
             // Calculate basic values that are used for rendering
-            int imageWidth;
-            int imageHeight;
+            int newImageWidth;
+            int newImageHeight;
             if (PRModSettings.scaleOutputImage)
             {
-                imageHeight = PRModSettings.outputImageFixedHeight;
-                imageWidth = (int)((float)imageHeight / distZ * distX);
+                newImageWidth = PRModSettings.outputImageFixedHeight;
+                newImageHeight = (int)(imageHeight / distZ * distX);
             }
             else
             {
-                imageWidth = (int)(distX * PRModSettings.pixelPerCell);
-                imageHeight = (int)(distZ * PRModSettings.pixelPerCell);
+                newImageWidth = (int)(distX * PRModSettings.pixelPerCell);
+                newImageHeight = (int)(distZ * PRModSettings.pixelPerCell);
+            }
+            bool mustUpdateTexture = false;
+            if (newImageWidth != imageWidth || newImageHeight != imageHeight)
+            {
+                mustUpdateTexture = true;
+                imageWidth = newImageWidth;
+                imageHeight = newImageHeight;
             }
 
-            int renderCountX = (int)Math.Ceiling((float)imageWidth / RenderTextureSize);
-            int renderCountZ = (int)Math.Ceiling((float)imageHeight / RenderTextureSize);
-            int renderWidth = (int)Math.Ceiling((float)imageWidth / renderCountX);
-            int renderHeight = (int)Math.Ceiling((float)imageHeight / renderCountZ);
-
-            float cameraPosX = (float)distX / 2 / renderCountX;
-            float cameraPosZ = (float)distZ / 2 / renderCountZ;
-            float orthographicSize = Math.Min(cameraPosX, cameraPosZ);
-            orthographicSize = cameraPosZ;
+            float cameraPosX = (float)distX / 2;
+            float cameraPosZ = (float)distZ / 2;
+            float orthographicSize = cameraPosZ;
             Vector3 cameraBasePos = new Vector3(cameraPosX, 15f + (orthographicSize - 11f) / 49f * 50f, cameraPosZ);
 
-            RenderTexture renderTexture = RenderTexture.GetTemporary(renderWidth, renderHeight, 24);
-            imageTexture = new Texture2D(imageWidth, imageHeight, TextureFormat.RGB24, false);
-            
+            // Initialize cameras and textures
+            RenderTexture renderTexture = RenderTexture.GetTemporary(imageWidth, imageHeight, 24);
+            if (imageTexture == null || mustUpdateTexture)
+            {
+                imageTexture = new Texture2D(imageWidth, imageHeight, TextureFormat.RGB24, false);
+            }
+
             Camera camera = Find.Camera;
             CameraDriver camDriver = camera.GetComponent<CameraDriver>();
             camDriver.enabled = false;
@@ -283,19 +285,14 @@ namespace ProgressRenderer
             Traverse camDriverTraverse = Traverse.Create(camDriver);
             camDriverTraverse.Field("lastViewRect").SetValue(CellRect.FromLimits(camRectMinX, camRectMinZ, camRectMaxX, camRectMaxZ));
             camDriverTraverse.Field("lastViewRectGetFrame").SetValue(Time.frameCount);
+
             yield return new WaitForEndOfFrame();
 
             // Set camera values needed for rendering
             camera.orthographicSize = orthographicSize;
             camera.farClipPlane = cameraBasePos.y + 6.5f;
-            
-            // Create a temporary camera for rendering
-            /*Camera tmpCam = Camera.Instantiate(camera);
-            tmpCam.orthographicSize = orthographicSize;
-            tmpCam.farClipPlane = cameraPos.y + 6.5f;*/
 
             // Set render textures
-            //tmpCam.targetTexture = renderTexture;
             camera.targetTexture = renderTexture;
             RenderTexture.active = renderTexture;
 
@@ -306,18 +303,13 @@ namespace ProgressRenderer
                 {
                     map.weatherManager.DrawAllWeather();
                 }
-                for (int i = 0; i < renderCountZ; i++)
-                {
-                    for (int j = 0; j < renderCountX; j++)
-                    {
-                        camera.transform.position = new Vector3(startX + cameraBasePos.x * (2 * j + 1), cameraBasePos.y, startZ + cameraBasePos.z * (2 * i + 1));
-                        camera.Render();
-                        imageTexture.ReadPixels(new Rect(0, 0, renderWidth, renderHeight), renderWidth * j, renderHeight * i, false);
-                    }
-                }
-            } catch(Exception e)
+                camera.transform.position = new Vector3(startX + cameraBasePos.x, cameraBasePos.y, startZ + cameraBasePos.z);
+                camera.Render();
+                imageTexture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0, false);
+            }
+            catch (Exception e)
             {
-                Log.Error(e.Message, true);
+                Log.Error(e.Message);
             }
 
             // Restore camera and viewport
@@ -344,21 +336,29 @@ namespace ProgressRenderer
 
             // Sinal finished rendering
             Rendering = false;
+            // Hide message box
+            if (messageBox != null)
+            {
+                messageBox.Close();
+                messageBox = null;
+            }
             yield return null;
 
             // Start encoding
-            DoEncoding();
+            if (EncodingTask != null && !EncodingTask.IsCompleted)
+                EncodingTask.Wait();
+            EncodingTask = Task.Run(DoEncoding);
 
             yield break;
         }
 
         private void DoEncoding()
         {
-            if (encodingInt)
+            if (encoding)
             {
                 Log.Error("Progress Renderer is still encoding an image while the encoder was called again. This can lead to missing or wrong data.");
             }
-            switch(PRModSettings.encoding)
+            switch (PRModSettings.encoding)
             {
                 case EncodingType.UnityJPG:
                     EncodeUnityJpg();
@@ -376,21 +376,11 @@ namespace ProgressRenderer
         private void DoEncodingPost()
         {
             // Clean up unused objects
-            imageTextureRawData = null;
-            UnityEngine.Object.Destroy(imageTexture);
-            imageTextureWidth = 0;
-            imageTextureHeight = 0;
-            
+            //UnityEngine.Object.Destroy(imageTexture);
+
             // Signal finished encoding
             manuallyTriggered = false;
-            encodingInt = false;
-
-            // Hide message box
-            if (messageBox != null)
-            {
-                messageBox.Close();
-                messageBox = null;
-            }
+            encoding = false;
         }
 
         private void EncodeUnityPng()
@@ -409,12 +399,14 @@ namespace ProgressRenderer
         {
             // Create file and save encoded image
             string filePath = CreateCurrentFilePath();
+
             File.WriteAllBytes(filePath, encodedImage);
             // Create tmp copy to file if needed
             if (!manuallyTriggered && PRModSettings.fileNamePattern == FileNamePattern.BothTmpCopy)
             {
                 File.Copy(filePath, CreateFilePath(FileNamePattern.Numbered, true));
             }
+
             DoEncodingPost();
         }
 
@@ -488,7 +480,5 @@ namespace ProgressRenderer
         {
             return "rimworld-" + Find.World.info.seedString + "-" + map.Tile + "-" + lastRenderedCounter.ToString("000000");
         }
-
     }
-
 }

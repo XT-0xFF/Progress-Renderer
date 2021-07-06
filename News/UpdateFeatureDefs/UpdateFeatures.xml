@@ -22,4 +22,10 @@
     <assemblyVersion>1.2.0</assemblyVersion>
     <content>Update to 1.2</content>
   </HugsLib.UpdateFeatureDef>
+	
+  <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+    <defName>ProgressRenderer_1_3_0</defName>
+    <assemblyVersion>1.3.0</assemblyVersion>
+    <content>Update to 1.3. Also makes rendering go way way faster. Crank up those settings people!</content>
+  </HugsLib.UpdateFeatureDef>
 </Defs>
