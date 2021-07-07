@@ -14,8 +14,6 @@ namespace ProgressRenderer
 {
     public class MapComponent_RenderManager : MapComponent
     {
-        private const int RenderTextureSize = 4096;
-
         public static int nextGlobalRenderManagerTickOffset = 0;
         public bool Rendering { get; private set; }
 

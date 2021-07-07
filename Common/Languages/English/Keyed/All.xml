@@ -45,7 +45,7 @@
 	<LPR_SettingsRenderWeatherLabel>Weather</LPR_SettingsRenderWeatherLabel>
 	<LPR_SettingsRenderWeatherDescription>Enable this when the rendered images should contain the current ingame weather.</LPR_SettingsRenderWeatherDescription>
 	<LPR_SettingsSmoothRenderAreaStepsLabel>Smooth render area on change (set smoothing steps)</LPR_SettingsSmoothRenderAreaStepsLabel>
-	<LPR_SettingsSmoothRenderAreaStepsDescription>You can increase this if you want a smoother transition of your rendered area when you change the area with corner markers. Rendering will transition smoothly to the new area in the next X renderings. (Note that it may take a while to geet to the new area if you choose a high step value and a low render interval.)</LPR_SettingsSmoothRenderAreaStepsDescription>
+	<LPR_SettingsSmoothRenderAreaStepsDescription>You can increase this if you want a smoother transition of your rendered area when you change the area with corner markers. Rendering will transition smoothly to the new area in the next X renderings. (Note that it may take a while to get to the new area if you choose a high step value and a low render interval.)</LPR_SettingsSmoothRenderAreaStepsDescription>
 	<LPR_SettingsIntervalLabel>Render every</LPR_SettingsIntervalLabel>
 	<LPR_SettingsIntervalDescription>Choose the render interval, so how often a progress image should be taken. You can choose a frequency between once a quadrum and hourly.</LPR_SettingsIntervalDescription>
 	<LPR_SettingsTimeOfDayLabel>Render at</LPR_SettingsTimeOfDayLabel>

@@ -16,10 +16,10 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>v1.3\Assemblies\</OutputPath>
+    <OutputPath>v1.2\Assemblies\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>v1.3\Assemblies\</OutputPath>
+    <OutputPath>v1.2\Assemblies\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -124,7 +124,6 @@
     <Content Include="Common\Textures\UI\Designators\CornerMarkerOn.png" />
     <Content Include="News\UpdateFeatureDefs\UpdateFeatures.xml" />
     <Content Include="v1.2\Assemblies\Progress-Renderer.dll" />
-    <Content Include="v1.2\Assemblies\Progress-Renderer.pdb" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitattributes" />
