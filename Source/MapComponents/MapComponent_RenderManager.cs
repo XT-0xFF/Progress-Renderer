@@ -237,14 +237,15 @@ namespace ProgressRenderer
             int newImageHeight;
             if (PRModSettings.scaleOutputImage)
             {
-                newImageWidth = PRModSettings.outputImageFixedHeight;
-                newImageHeight = (int)(imageHeight / distZ * distX);
+                newImageWidth = (int)(PRModSettings.outputImageFixedHeight / distZ * distX);
+                newImageHeight = PRModSettings.outputImageFixedHeight;
             }
             else
             {
                 newImageWidth = (int)(distX * PRModSettings.pixelPerCell);
                 newImageHeight = (int)(distZ * PRModSettings.pixelPerCell);
             }
+
             bool mustUpdateTexture = false;
             if (newImageWidth != imageWidth || newImageHeight != imageHeight)
             {
