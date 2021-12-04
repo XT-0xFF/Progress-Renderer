@@ -346,7 +346,7 @@ namespace ProgressRenderer
             // Start encoding
             if (EncodingTask != null && !EncodingTask.IsCompleted)
                 EncodingTask.Wait();
-            EncodingTask = Task.Run(DoEncoding);
+            EncodingTask = Task.Run((Action)DoEncoding);
 
             yield break;
         }
