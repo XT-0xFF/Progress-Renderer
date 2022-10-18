@@ -26,7 +26,7 @@ namespace ProgressRenderer
 
         public override void DoWindowContents(Rect inRect)
         {
-            TextAnchor backupAnchor = Text.Anchor;
+            var backupAnchor = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleCenter;
             Widgets.Label(inRect, text);
             Text.Anchor = backupAnchor;

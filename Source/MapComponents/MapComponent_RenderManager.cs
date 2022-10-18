@@ -40,6 +40,16 @@ namespace ProgressRenderer
         private bool ctrlEncodingPost = false;
         private SmallMessageBox messageBox;
 
+        private struct VisibilitySettings
+        {
+            public bool showZones;
+            public bool showRoofOverlay;
+            public bool showFertilityOverlay;
+            public bool showTerrainAffordanceOverlay;
+            public bool showPollutionOverlay;
+            public bool showTemperatureOverlay;
+        }
+
         public MapComponent_RenderManager(Map map) : base(map)
         {
         }
@@ -77,8 +87,8 @@ namespace ProgressRenderer
                 return;
             }
             // Check for correct time to render
-            Vector2 longLat = Find.WorldGrid.LongLatOf(map.Tile);
-            int currHour = MoreGenDate.HoursPassedInteger(Find.TickManager.TicksAbs, longLat.x);
+            var longLat = Find.WorldGrid.LongLatOf(map.Tile);
+            var currHour = MoreGenDate.HoursPassedInteger(Find.TickManager.TicksAbs, longLat.x);
             if (currHour <= lastRenderedHour)
             {
                 return;
@@ -95,6 +105,7 @@ namespace ProgressRenderer
             {
                 return;
             }
+            
             // Show message window or print message
             ShowCurrentRenderMessage();
             // Start rendering
@@ -152,8 +163,8 @@ namespace ProgressRenderer
             Rendering = true;
 
             // Temporary switch to this map for rendering
-            bool switchedMap = false;
-            Map rememberedMap = Find.CurrentMap;
+            var switchedMap = false;
+            var rememberedMap = Find.CurrentMap;
             if (map != rememberedMap)
             {
                 switchedMap = true;
@@ -161,29 +172,56 @@ namespace ProgressRenderer
             }
 
             // Close world view if needed
-            bool rememberedWorldRendered = WorldRendererUtility.WorldRenderedNow;
+            var rememberedWorldRendered = WorldRendererUtility.WorldRenderedNow;
             if (rememberedWorldRendered)
             {
                 CameraJumper.TryHideWorld();
             }
+            
+            #region Hide overlays
 
-            // Calculate rendered area
+            var settings = Find.PlaySettings;
+            var oldVisibilities = new VisibilitySettings
+            {
+                showZones = settings.showZones,
+                showRoofOverlay = settings.showRoofOverlay,
+                showFertilityOverlay = settings.showFertilityOverlay,
+                showTerrainAffordanceOverlay = settings.showTerrainAffordanceOverlay,
+                showPollutionOverlay = settings.showPollutionOverlay,
+                showTemperatureOverlay = settings.showTemperatureOverlay
+            };
+            
+            Find.PlaySettings.showZones = PRModSettings.renderZones;
+            Find.PlaySettings.showRoofOverlay = PRModSettings.renderOverlays;
+            Find.PlaySettings.showFertilityOverlay = PRModSettings.renderOverlays;
+            Find.PlaySettings.showTerrainAffordanceOverlay = PRModSettings.renderOverlays;
+            Find.PlaySettings.showPollutionOverlay = PRModSettings.renderOverlays;
+            Find.PlaySettings.showTemperatureOverlay = PRModSettings.renderOverlays;
+            
+            //TODO: Hide plans
+            //TODO: Hide blueprints
+            //TODO: Hide fog of war (stretch) 
+
+            #endregion
+            
+            #region Calculate rendered area
+
             float startX = 0;
             float startZ = 0;
             float endX = map.Size.x;
             float endZ = map.Size.z;
             if (!forceRenderFullMap)
             {
-                List<Designation> cornerMarkers = map.designationManager.allDesignations.FindAll(des => des.def == DesignationDefOf.CornerMarker);
+                var cornerMarkers = map.designationManager.AllDesignations.FindAll(des => des.def == DesignationDefOf.CornerMarker);
                 if (cornerMarkers.Count > 1)
                 {
                     startX = endX;
                     startZ = endZ;
                     endX = 0;
                     endZ = 0;
-                    foreach (Designation des in cornerMarkers)
+                    foreach (var des in cornerMarkers)
                     {
-                        IntVec3 cell = des.target.Cell;
+                        var cell = des.target.Cell;
                         if (cell.x < startX) { startX = cell.x; }
                         if (cell.z < startZ) { startZ = cell.z; }
                         if (cell.x > endX) { endX = cell.x; }
@@ -198,10 +236,10 @@ namespace ProgressRenderer
             if (!manuallyTriggered)
             {
                 // Test if target render area changed to reset smoothing
-                if (rsTargetStartX != startX || rsTargetStartZ != startZ || rsTargetEndX != endX || rsTargetEndZ != endZ)
+                if (!(rsTargetStartX.CloseEquals(startX) && rsTargetStartZ.CloseEquals(startZ) && rsTargetEndX.CloseEquals(endX) && rsTargetEndZ.CloseEquals(endZ)))
                 {
                     // Check if area was manually reset or uninitialized (-1) to not smooth
-                    if (rsTargetStartX == -1f && rsTargetStartZ == -1f && rsTargetEndX == -1f && rsTargetEndZ == -1f)
+                    if (rsTargetStartX.CloseEquals(-1f) && rsTargetStartZ.CloseEquals(-1f) && rsTargetEndX.CloseEquals(-1f) && rsTargetEndZ.CloseEquals(-1f))
                     {
                         rsCurrentPosition = 1f;
                     }
@@ -229,9 +267,13 @@ namespace ProgressRenderer
                 }
             }
 
-            float distX = endX - startX;
-            float distZ = endZ - startZ;
+            var distX = endX - startX;
+            var distZ = endZ - startZ;
+            
+            #endregion
 
+            #region Calculate texture size
+            
             // Calculate basic values that are used for rendering
             int newImageWidth;
             int newImageHeight;
@@ -246,7 +288,7 @@ namespace ProgressRenderer
                 newImageHeight = (int)(distZ * PRModSettings.pixelPerCell);
             }
 
-            bool mustUpdateTexture = false;
+            var mustUpdateTexture = false;
             if (newImageWidth != imageWidth || newImageHeight != imageHeight)
             {
                 mustUpdateTexture = true;
@@ -254,43 +296,52 @@ namespace ProgressRenderer
                 imageHeight = newImageHeight;
             }
 
-            float cameraPosX = (float)distX / 2;
-            float cameraPosZ = (float)distZ / 2;
-            float orthographicSize = cameraPosZ;
-            Vector3 cameraBasePos = new Vector3(cameraPosX, 15f + (orthographicSize - 11f) / 49f * 50f, cameraPosZ);
+            #endregion
+
+            #region Initialize camera and textures
+            
+            var cameraPosX = distX / 2;
+            var cameraPosZ = distZ / 2;
+            var orthographicSize = cameraPosZ;
+            var cameraBasePos = new Vector3(cameraPosX, 15f + (orthographicSize - 11f) / 49f * 50f, cameraPosZ);
 
             // Initialize cameras and textures
-            RenderTexture renderTexture = RenderTexture.GetTemporary(imageWidth, imageHeight, 24);
+            var renderTexture = RenderTexture.GetTemporary(imageWidth, imageHeight, 24);
             if (imageTexture == null || mustUpdateTexture)
             {
                 imageTexture = new Texture2D(imageWidth, imageHeight, TextureFormat.RGB24, false);
             }
 
-            Camera camera = Find.Camera;
-            CameraDriver camDriver = camera.GetComponent<CameraDriver>();
+            var camera = Find.Camera;
+            var camDriver = camera.GetComponent<CameraDriver>();
             camDriver.enabled = false;
-
+            
             // Store current camera data
-            Vector3 rememberedRootPos = map.rememberedCameraPos.rootPos;
-            float rememberedRootSize = map.rememberedCameraPos.rootSize;
-            float rememberedFarClipPlane = camera.farClipPlane;
+            var rememberedRootPos = map.rememberedCameraPos.rootPos;
+            var rememberedRootSize = map.rememberedCameraPos.rootSize;
+            var rememberedFarClipPlane = camera.farClipPlane;
 
             // Overwrite current view rect in the camera driver
-            CellRect camViewRect = camDriver.CurrentViewRect;
-            int camRectMinX = Math.Min((int)startX, camViewRect.minX);
-            int camRectMinZ = Math.Min((int)startZ, camViewRect.minZ);
-            int camRectMaxX = Math.Max((int)Math.Ceiling(endX), camViewRect.maxX);
-            int camRectMaxZ = Math.Max((int)Math.Ceiling(endZ), camViewRect.maxZ);
-            Traverse camDriverTraverse = Traverse.Create(camDriver);
+            var camViewRect = camDriver.CurrentViewRect;
+            var camRectMinX = Math.Min((int)startX, camViewRect.minX);
+            var camRectMinZ = Math.Min((int)startZ, camViewRect.minZ);
+            var camRectMaxX = Math.Max((int)Math.Ceiling(endX), camViewRect.maxX);
+            var camRectMaxZ = Math.Max((int)Math.Ceiling(endZ), camViewRect.maxZ);
+            var camDriverTraverse = Traverse.Create(camDriver);
             camDriverTraverse.Field("lastViewRect").SetValue(CellRect.FromLimits(camRectMinX, camRectMinZ, camRectMaxX, camRectMaxZ));
             camDriverTraverse.Field("lastViewRectGetFrame").SetValue(Time.frameCount);
+
+            #endregion
 
             yield return new WaitForEndOfFrame();
 
             // Set camera values needed for rendering
             camera.orthographicSize = orthographicSize;
             camera.farClipPlane = cameraBasePos.y + 6.5f;
+            camera.aspect = (float)imageWidth / imageHeight;
 
+            #region Render
+            
             // Set render textures
             camera.targetTexture = renderTexture;
             RenderTexture.active = renderTexture;
@@ -311,16 +362,29 @@ namespace ProgressRenderer
                 Log.Error(e.Message);
             }
 
+            #endregion
+
+            #region Restore pre-render state
+
             // Restore camera and viewport
             RenderTexture.active = null;
             //tmpCam.targetTexture = null;
             camera.targetTexture = null;
             camera.farClipPlane = rememberedFarClipPlane;
+            camera.ResetAspect();
             camDriver.SetRootPosAndSize(rememberedRootPos, rememberedRootSize);
             camDriver.enabled = true;
 
             RenderTexture.ReleaseTemporary(renderTexture);
-
+            
+            // Enable overlays
+            Find.PlaySettings.showZones = oldVisibilities.showZones;
+            Find.PlaySettings.showRoofOverlay = oldVisibilities.showRoofOverlay;
+            Find.PlaySettings.showFertilityOverlay = oldVisibilities.showFertilityOverlay;
+            Find.PlaySettings.showTerrainAffordanceOverlay = oldVisibilities.showTerrainAffordanceOverlay;
+            Find.PlaySettings.showPollutionOverlay = oldVisibilities.showPollutionOverlay;
+            Find.PlaySettings.showTemperatureOverlay = oldVisibilities.showTemperatureOverlay;
+            
             // Switch back to world view if needed
             if (rememberedWorldRendered)
             {
@@ -332,8 +396,10 @@ namespace ProgressRenderer
             {
                 Current.Game.CurrentMap = rememberedMap;
             }
+            
+            #endregion
 
-            // Sinal finished rendering
+            // Signal finished rendering
             Rendering = false;
             // Hide message box
             if (messageBox != null)
@@ -347,8 +413,6 @@ namespace ProgressRenderer
             if (EncodingTask != null && !EncodingTask.IsCompleted)
                 EncodingTask.Wait();
             EncodingTask = Task.Run(DoEncoding);
-
-            yield break;
         }
 
         private void DoEncoding()
@@ -384,20 +448,20 @@ namespace ProgressRenderer
 
         private void EncodeUnityPng()
         {
-            byte[] encodedImage = imageTexture.EncodeToPNG();
+            var encodedImage = imageTexture.EncodeToPNG();
             SaveUnityEncoding(encodedImage);
         }
 
         private void EncodeUnityJpg()
         {
-            byte[] encodedImage = imageTexture.EncodeToJPG(PRModSettings.jpgQuality);
+            var encodedImage = imageTexture.EncodeToJPG(PRModSettings.jpgQuality);
             SaveUnityEncoding(encodedImage);
         }
 
         private void SaveUnityEncoding(byte[] encodedImage)
         {
             // Create file and save encoded image
-            string filePath = CreateCurrentFilePath();
+            var filePath = CreateCurrentFilePath();
 
             File.WriteAllBytes(filePath, encodedImage);
             // Create tmp copy to file if needed
@@ -427,7 +491,7 @@ namespace ProgressRenderer
                 imageName = CreateImageNameDateTime();
             }
             // Create path and subdirectory
-            string path = PRModSettings.exportPath;
+            var path = PRModSettings.exportPath;
             if (PRModSettings.createSubdirs)
             {
                 path = Path.Combine(path, Find.World.info.seedString);
@@ -446,13 +510,13 @@ namespace ProgressRenderer
                 Directory.CreateDirectory(path);
             }
             // Get correct file and location
-            string fileExt = EnumUtils.GetFileExtension(PRModSettings.encoding);
-            string filePath = Path.Combine(path, imageName + "." + fileExt);
+            var fileExt = EnumUtils.GetFileExtension(PRModSettings.encoding);
+            var filePath = Path.Combine(path, imageName + "." + fileExt);
             if (!File.Exists(filePath))
             {
                 return filePath;
             }
-            int i = 1;
+            var i = 1;
             filePath = Path.Combine(path, imageName);
             string newPath;
             do
@@ -466,12 +530,12 @@ namespace ProgressRenderer
 
         private string CreateImageNameDateTime()
         {
-            int tick = Find.TickManager.TicksAbs;
-            float longitude = Find.WorldGrid.LongLatOf(map.Tile).x;
-            int year = GenDate.Year(tick, longitude);
-            int quadrum = MoreGenDate.QuadrumInteger(tick, longitude);
-            int day = GenDate.DayOfQuadrum(tick, longitude) + 1;
-            int hour = GenDate.HourInteger(tick, longitude);
+            var tick = Find.TickManager.TicksAbs;
+            var longitude = Find.WorldGrid.LongLatOf(map.Tile).x;
+            var year = GenDate.Year(tick, longitude);
+            var quadrum = MoreGenDate.QuadrumInteger(tick, longitude);
+            var day = GenDate.DayOfQuadrum(tick, longitude) + 1;
+            var hour = GenDate.HourInteger(tick, longitude);
             return "rimworld-" + Find.World.info.seedString + "-" + map.Tile + "-" + year + "-" + quadrum + "-" + ((day < 10) ? "0" : "") + day + "-" + ((hour < 10) ? "0" : "") + hour;
         }
 

@@ -70,9 +70,9 @@ namespace ProgressRenderer
 
         private void DesignateSingleCellFeedback()
         {
-            List<Designation> cornerMarkers = Map.designationManager.allDesignations.FindAll(des => des.def == DesignationDefOf.CornerMarker);
+            var cornerMarkers = Map.designationManager.AllDesignations.FindAll(des => des.def == DesignationDefOf.CornerMarker);
             // Message for the amount of markers on the map
-            int markerCount = cornerMarkers.Count;
+            var markerCount = cornerMarkers.Count;
             string message = TranslatorFormattedStringExtensions.Translate("LPR_MessageCornerMarkerAmount", markerCount) + " ";
             if (markerCount < 2)
             {
@@ -90,13 +90,13 @@ namespace ProgressRenderer
             // Message for the created area (if enough markers)
             if (markerCount > 1)
             {
-                int startX = Map.Size.x;
-                int startZ = Map.Size.z;
-                int endX = 0;
-                int endZ = 0;
-                foreach (Designation des in cornerMarkers)
+                var startX = Map.Size.x;
+                var startZ = Map.Size.z;
+                var endX = 0;
+                var endZ = 0;
+                foreach (var des in cornerMarkers)
                 {
-                    IntVec3 cell = des.target.Cell;
+                    var cell = des.target.Cell;
                     if (cell.x < startX) { startX = cell.x; }
                     if (cell.z < startZ) { startZ = cell.z; }
                     if (cell.x > endX) { endX = cell.x; }
@@ -104,9 +104,9 @@ namespace ProgressRenderer
                 }
                 endX += 1;
                 endZ += 1;
-                int distX = endX - startX;
-                int distZ = endZ - startZ;
-                string ratio = ((float)distX / distZ).ToString("0.###");
+                var distX = endX - startX;
+                var distZ = endZ - startZ;
+                var ratio = ((float)distX / distZ).ToString("0.###");
                 string messageRect = TranslatorFormattedStringExtensions.Translate("LPR_MessageCornerMarkersRect", distX, distZ);
                 if (distX * 3 == distZ * 4)
                 {

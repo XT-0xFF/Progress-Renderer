@@ -15,6 +15,8 @@ namespace ProgressRenderer
         private static bool DefaultRenderThingIcons = false;
         private static bool DefaultRenderGameConditions = true;
         private static bool DefaultRenderWeather = true;
+        private static bool DefaultRenderZones = true;
+        private static bool DefaultRenderOverlays = false;
         private static int DefaultSmoothRenderAreaSteps = 0;
         private static int DefaultInterval = 24;
         private static int DefaultTimeOfDay = 8;
@@ -32,6 +34,9 @@ namespace ProgressRenderer
         public static bool renderThingIcons = DefaultRenderThingIcons;
         public static bool renderGameConditions = DefaultRenderGameConditions;
         public static bool renderWeather = DefaultRenderWeather;
+        public static bool renderZones = DefaultRenderZones;
+        public static bool renderOverlays = DefaultRenderOverlays;
+
         public static int smoothRenderAreaSteps = DefaultSmoothRenderAreaSteps;
         private static int whichInterval = RenderIntervalHelper.Intervals.IndexOf(DefaultInterval);
         public static int timeOfDay = DefaultTimeOfDay;
@@ -80,7 +85,7 @@ namespace ProgressRenderer
                 }
             }
 
-            Listing_Standard ls = new Listing_Standard();
+            var ls = new Listing_Standard();
             var leftHalf = new Rect(settingsRect.x, settingsRect.y, settingsRect.width / 2 - 12f, settingsRect.height);
             var rightHalf = new Rect(settingsRect.x + settingsRect.width / 2 + 12f, settingsRect.y, settingsRect.width / 2 - 12f, settingsRect.height);
 
@@ -88,11 +93,11 @@ namespace ProgressRenderer
 
             // Left half (general settings)
             ls.CheckboxLabeled("LPR_SettingsEnabledLabel".Translate(), ref enabled, "LPR_SettingsEnabledDescription".Translate());
-            TextAnchor backupAnchor = Text.Anchor;
+            var backupAnchor = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleLeft;
             if (ls.ButtonTextLabeled("LPR_SettingsRenderFeedbackLabel".Translate(), ("LPR_RenderFeedback_" + renderFeedback).Translate()))
             {
-                List<FloatMenuOption> menuEntries = new List<FloatMenuOption>();
+                var menuEntries = new List<FloatMenuOption>();
                 var feedbackTypes = (RenderFeedback[])Enum.GetValues(typeof(RenderFeedback));
                 foreach (var type in feedbackTypes)
                 {
@@ -112,6 +117,8 @@ namespace ProgressRenderer
             ls.CheckboxLabeled("LPR_SettingsRenderThingIconsLabel".Translate(), ref renderThingIcons, "LPR_SettingsRenderThingIconsDescription".Translate());
             ls.CheckboxLabeled("LPR_SettingsRenderGameConditionsLabel".Translate(), ref renderGameConditions, "LPR_SettingsRenderGameConditionsDescription".Translate());
             ls.CheckboxLabeled("LPR_SettingsRenderWeatherLabel".Translate(), ref renderWeather, "LPR_SettingsRenderWeatherDescription".Translate());
+            ls.CheckboxLabeled("LPR_SettingsRenderZonesLabel".Translate(), ref renderZones, "LPR_SettingsRenderZonesDescription".Translate());
+            ls.CheckboxLabeled("LPR_SettingsRenderOverlaysLabel".Translate(), ref renderOverlays, "LPR_SettingsRenderOverlaysDescription".Translate());
             ls.GapLine();
 
             ls.Gap();
@@ -132,7 +139,7 @@ namespace ProgressRenderer
             Text.Anchor = TextAnchor.MiddleLeft;
             if (ls.ButtonTextLabeled("LPR_SettingsEncodingLabel".Translate(), ("LPR_ImgEncoding_" + EnumUtils.ToFriendlyString(encoding)).Translate()))
             {
-                List<FloatMenuOption> menuEntries = new List<FloatMenuOption>();
+                var menuEntries = new List<FloatMenuOption>();
                 var encodingTypes = (EncodingType[])Enum.GetValues(typeof(EncodingType));
                 foreach (var encodingType in encodingTypes)
                 {
@@ -177,7 +184,7 @@ namespace ProgressRenderer
             Text.Anchor = TextAnchor.MiddleLeft;
             if (ls.ButtonTextLabeled("LPR_SettingsFileNamePatternLabel".Translate(), ("LPR_FileNamePattern_" + fileNamePattern).Translate()))
             {
-                List<FloatMenuOption> menuEntries = new List<FloatMenuOption>();
+                var menuEntries = new List<FloatMenuOption>();
                 var patterns = (FileNamePattern[])Enum.GetValues(typeof(FileNamePattern));
                 foreach (var pattern in patterns)
                 {
@@ -202,6 +209,8 @@ namespace ProgressRenderer
             Scribe_Values.Look(ref renderThingIcons, "renderThingIcons", DefaultRenderThingIcons);
             Scribe_Values.Look(ref renderGameConditions, "renderGameConditions", DefaultRenderGameConditions);
             Scribe_Values.Look(ref renderWeather, "renderWeather", DefaultRenderWeather);
+            Scribe_Values.Look(ref renderZones, "renderZones", DefaultRenderZones);
+            Scribe_Values.Look(ref renderOverlays, "renderOverlays", DefaultRenderOverlays);
             Scribe_Values.Look(ref smoothRenderAreaSteps, "smoothRenderAreaSteps", DefaultSmoothRenderAreaSteps);
             Scribe_Values.Look(ref whichInterval, "whichInterval", RenderIntervalHelper.Intervals.IndexOf(DefaultInterval));
             Scribe_Values.Look(ref timeOfDay, "timeOfDay", DefaultTimeOfDay);
@@ -242,7 +251,7 @@ namespace ProgressRenderer
 
             public static string GetLabel(int interval)
             {
-                int labelIndex = Intervals.IndexOf(interval);
+                var labelIndex = Intervals.IndexOf(interval);
                 if (labelIndex < 0)
                 {
                     Log.Error("Wrong configuration found for ProgressRenderer.PRModSettings.interval. Using default value.");

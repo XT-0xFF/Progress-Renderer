@@ -109,6 +109,7 @@
     <Compile Include="Source\Mod\PRMod.cs" />
     <Compile Include="Source\Mod\PRModSettings.cs" />
     <Compile Include="Source\UI\SmallMessageBox.cs" />
+    <Compile Include="Source\Utils\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="About\About.xml" />
@@ -124,6 +125,7 @@
     <Content Include="Common\Textures\UI\Designators\CornerMarkerOn.png" />
     <Content Include="News\UpdateFeatureDefs\UpdateFeatures.xml" />
     <Content Include="v1.2\Assemblies\Progress-Renderer.dll" />
+    <Content Include="v1.4\Assemblies\Progress-Renderer.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitattributes" />
