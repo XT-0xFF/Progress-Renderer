@@ -80,12 +80,14 @@ namespace ProgressRenderer
             {
                 return;
             }
+
             // Check for rendering
             // Only render player home maps
             if (!map.IsPlayerHome)
             {
                 return;
             }
+
             // Check for correct time to render
             var longLat = Find.WorldGrid.LongLatOf(map.Tile);
             var currHour = MoreGenDate.HoursPassedInteger(Find.TickManager.TicksAbs, longLat.x);
@@ -93,10 +95,12 @@ namespace ProgressRenderer
             {
                 return;
             }
+
             if (currHour % PRModSettings.interval != PRModSettings.timeOfDay % PRModSettings.interval)
             {
                 return;
             }
+
             // Update timing variables
             lastRenderedHour = currHour;
             lastRenderedCounter++;
@@ -105,7 +109,7 @@ namespace ProgressRenderer
             {
                 return;
             }
-            
+
             // Show message window or print message
             ShowCurrentRenderMessage();
             // Start rendering
@@ -160,6 +164,7 @@ namespace ProgressRenderer
             {
                 Log.Error("Progress Renderer is still rendering an image while a new rendering was requested. This can lead to missing or wrong data. (This can also happen in rare situations when you trigger manual rendering the exact same time as an automatic rendering happens. If you did that, just check your export folder if both renderings were done corrently and ignore this error.)");
             }
+
             Rendering = true;
 
             // Temporary switch to this map for rendering
@@ -177,7 +182,7 @@ namespace ProgressRenderer
             {
                 CameraJumper.TryHideWorld();
             }
-            
+
             #region Hide overlays
 
             var settings = Find.PlaySettings;
@@ -190,20 +195,20 @@ namespace ProgressRenderer
                 showPollutionOverlay = settings.showPollutionOverlay,
                 showTemperatureOverlay = settings.showTemperatureOverlay
             };
-            
+
             Find.PlaySettings.showZones = PRModSettings.renderZones;
             Find.PlaySettings.showRoofOverlay = PRModSettings.renderOverlays;
             Find.PlaySettings.showFertilityOverlay = PRModSettings.renderOverlays;
             Find.PlaySettings.showTerrainAffordanceOverlay = PRModSettings.renderOverlays;
             Find.PlaySettings.showPollutionOverlay = PRModSettings.renderOverlays;
             Find.PlaySettings.showTemperatureOverlay = PRModSettings.renderOverlays;
-            
+
             //TODO: Hide plans
             //TODO: Hide blueprints
             //TODO: Hide fog of war (stretch) 
 
             #endregion
-            
+
             #region Calculate rendered area
 
             float startX = 0;
@@ -227,6 +232,7 @@ namespace ProgressRenderer
                         if (cell.x > endX) { endX = cell.x; }
                         if (cell.z > endZ) { endZ = cell.z; }
                     }
+
                     endX += 1;
                     endZ += 1;
                 }
@@ -236,10 +242,10 @@ namespace ProgressRenderer
             if (!manuallyTriggered)
             {
                 // Test if target render area changed to reset smoothing
-                if (!(rsTargetStartX.CloseEquals(startX) && rsTargetStartZ.CloseEquals(startZ) && rsTargetEndX.CloseEquals(endX) && rsTargetEndZ.CloseEquals(endZ)))
+                if (rsTargetStartX != startX || rsTargetStartZ != startZ || rsTargetEndX != endX || rsTargetEndZ != endZ)
                 {
                     // Check if area was manually reset or uninitialized (-1) to not smooth
-                    if (rsTargetStartX.CloseEquals(-1f) && rsTargetStartZ.CloseEquals(-1f) && rsTargetEndX.CloseEquals(-1f) && rsTargetEndZ.CloseEquals(-1f))
+                    if (rsTargetStartX == -1f && rsTargetStartZ == -1f && rsTargetEndX == -1f && rsTargetEndZ == -1f)
                     {
                         rsCurrentPosition = 1f;
                     }
@@ -247,6 +253,7 @@ namespace ProgressRenderer
                     {
                         rsCurrentPosition = 1f / (PRModSettings.smoothRenderAreaSteps + 1);
                     }
+
                     rsOldStartX = rsTargetStartX;
                     rsOldStartZ = rsTargetStartZ;
                     rsOldEndX = rsTargetEndX;
@@ -256,6 +263,7 @@ namespace ProgressRenderer
                     rsTargetEndX = endX;
                     rsTargetEndZ = endZ;
                 }
+
                 // Apply smoothing to render area
                 if (rsCurrentPosition < 1f)
                 {
@@ -269,23 +277,23 @@ namespace ProgressRenderer
 
             var distX = endX - startX;
             var distZ = endZ - startZ;
-            
+
             #endregion
 
             #region Calculate texture size
-            
+
             // Calculate basic values that are used for rendering
             int newImageWidth;
             int newImageHeight;
             if (PRModSettings.scaleOutputImage)
             {
-                newImageWidth = (int)(PRModSettings.outputImageFixedHeight / distZ * distX);
+                newImageWidth = (int) (PRModSettings.outputImageFixedHeight / distZ * distX);
                 newImageHeight = PRModSettings.outputImageFixedHeight;
             }
             else
             {
-                newImageWidth = (int)(distX * PRModSettings.pixelPerCell);
-                newImageHeight = (int)(distZ * PRModSettings.pixelPerCell);
+                newImageWidth = (int) (distX * PRModSettings.pixelPerCell);
+                newImageHeight = (int) (distZ * PRModSettings.pixelPerCell);
             }
 
             var mustUpdateTexture = false;
@@ -299,7 +307,7 @@ namespace ProgressRenderer
             #endregion
 
             #region Initialize camera and textures
-            
+
             var cameraPosX = distX / 2;
             var cameraPosZ = distZ / 2;
             var orthographicSize = cameraPosZ;
@@ -315,7 +323,7 @@ namespace ProgressRenderer
             var camera = Find.Camera;
             var camDriver = camera.GetComponent<CameraDriver>();
             camDriver.enabled = false;
-            
+
             // Store current camera data
             var rememberedRootPos = map.rememberedCameraPos.rootPos;
             var rememberedRootSize = map.rememberedCameraPos.rootSize;
@@ -323,10 +331,10 @@ namespace ProgressRenderer
 
             // Overwrite current view rect in the camera driver
             var camViewRect = camDriver.CurrentViewRect;
-            var camRectMinX = Math.Min((int)startX, camViewRect.minX);
-            var camRectMinZ = Math.Min((int)startZ, camViewRect.minZ);
-            var camRectMaxX = Math.Max((int)Math.Ceiling(endX), camViewRect.maxX);
-            var camRectMaxZ = Math.Max((int)Math.Ceiling(endZ), camViewRect.maxZ);
+            var camRectMinX = Math.Min((int) startX, camViewRect.minX);
+            var camRectMinZ = Math.Min((int) startZ, camViewRect.minZ);
+            var camRectMaxX = Math.Max((int) Math.Ceiling(endX), camViewRect.maxX);
+            var camRectMaxZ = Math.Max((int) Math.Ceiling(endZ), camViewRect.maxZ);
             var camDriverTraverse = Traverse.Create(camDriver);
             camDriverTraverse.Field("lastViewRect").SetValue(CellRect.FromLimits(camRectMinX, camRectMinZ, camRectMaxX, camRectMaxZ));
             camDriverTraverse.Field("lastViewRectGetFrame").SetValue(Time.frameCount);
@@ -338,10 +346,9 @@ namespace ProgressRenderer
             // Set camera values needed for rendering
             camera.orthographicSize = orthographicSize;
             camera.farClipPlane = cameraBasePos.y + 6.5f;
-            camera.aspect = (float)imageWidth / imageHeight;
 
             #region Render
-            
+
             // Set render textures
             camera.targetTexture = renderTexture;
             RenderTexture.active = renderTexture;
@@ -371,12 +378,11 @@ namespace ProgressRenderer
             //tmpCam.targetTexture = null;
             camera.targetTexture = null;
             camera.farClipPlane = rememberedFarClipPlane;
-            camera.ResetAspect();
             camDriver.SetRootPosAndSize(rememberedRootPos, rememberedRootSize);
             camDriver.enabled = true;
 
             RenderTexture.ReleaseTemporary(renderTexture);
-            
+
             // Enable overlays
             Find.PlaySettings.showZones = oldVisibilities.showZones;
             Find.PlaySettings.showRoofOverlay = oldVisibilities.showRoofOverlay;
@@ -384,7 +390,7 @@ namespace ProgressRenderer
             Find.PlaySettings.showTerrainAffordanceOverlay = oldVisibilities.showTerrainAffordanceOverlay;
             Find.PlaySettings.showPollutionOverlay = oldVisibilities.showPollutionOverlay;
             Find.PlaySettings.showTemperatureOverlay = oldVisibilities.showTemperatureOverlay;
-            
+
             // Switch back to world view if needed
             if (rememberedWorldRendered)
             {
@@ -396,7 +402,7 @@ namespace ProgressRenderer
             {
                 Current.Game.CurrentMap = rememberedMap;
             }
-            
+
             #endregion
 
             // Signal finished rendering
@@ -407,6 +413,7 @@ namespace ProgressRenderer
                 messageBox.Close();
                 messageBox = null;
             }
+
             yield return null;
 
             // Start encoding
@@ -421,6 +428,7 @@ namespace ProgressRenderer
             {
                 Log.Error("Progress Renderer is still encoding an image while the encoder was called again. This can lead to missing or wrong data.");
             }
+
             switch (PRModSettings.encoding)
             {
                 case EncodingType.UnityJPG:
@@ -490,12 +498,14 @@ namespace ProgressRenderer
             {
                 imageName = CreateImageNameDateTime();
             }
+
             // Create path and subdirectory
             var path = PRModSettings.exportPath;
             if (PRModSettings.createSubdirs)
             {
                 path = Path.Combine(path, Find.World.info.seedString);
             }
+
             Directory.CreateDirectory(path);
             // Add subdir for manually triggered renderings
             if (manuallyTriggered)
@@ -503,12 +513,14 @@ namespace ProgressRenderer
                 path = Path.Combine(path, "manually");
                 Directory.CreateDirectory(path);
             }
+
             // Create additional subdir for numbered symlinks
             if (addTmpSubdir)
             {
                 path = Path.Combine(path, "tmp");
                 Directory.CreateDirectory(path);
             }
+
             // Get correct file and location
             var fileExt = EnumUtils.GetFileExtension(PRModSettings.encoding);
             var filePath = Path.Combine(path, imageName + "." + fileExt);
@@ -516,6 +528,7 @@ namespace ProgressRenderer
             {
                 return filePath;
             }
+
             var i = 1;
             filePath = Path.Combine(path, imageName);
             string newPath;
@@ -523,8 +536,8 @@ namespace ProgressRenderer
             {
                 newPath = filePath + "-alt" + i + "." + fileExt;
                 i++;
-            }
-            while (File.Exists(newPath));
+            } while (File.Exists(newPath));
+
             return newPath;
         }
 
